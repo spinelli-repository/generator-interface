@@ -1,0 +1,14 @@
+{
+  "name": "generator-interface",
+  "version": "0.1.0",
+  "description": "",
+  "files": [
+    "generators"
+  ],
+  "keywords": [
+    "yeoman-generator"
+  ],
+  "dependencies": {
+    "yeoman-generator": "^5.8.0"
+  }
+}
