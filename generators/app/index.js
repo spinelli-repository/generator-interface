@@ -23,18 +23,19 @@ module.exports = class extends Generator {
       const inputFileData = fs.readFileSync(inputFile, 'utf8');
       const inputData = JSON.parse(inputFileData);
       const outputFile1 = `src/app/module/${className}.ts`;
-      const outputFile2 = `src/app/component/${className}.ts`;
+      const outputFile2 = `src/app/component/conf.ts`;
+
       const outputFields = Object.keys(inputData).map((key) => {
         return `  ${key}: ${typeof inputData[key]};`
       }).join('\n');
+
       const outputFields2 = Object.keys(inputData).filter((key) => key != "id").map((key) => {
-        return `  ${key}: {
-          title: '${key}'
-        },`
-      }).join('\n');
+        return `  ${key}: { \n    title: '${key}' \n   },`
+      }).join('\n ');
+
       const outputFields3 = Object.keys(inputData).map((key) => {
-        return `{ name: '${key}', type: '${typeof inputData[key]}'},`
-      }).join('\n');
+        return `  { name: '${key}', type: '${typeof inputData[key]}'},`
+      }).join('\n  ');
 
       this.fs.write(
         this.destinationPath(outputFile1),
@@ -52,7 +53,7 @@ import {tableCommonSettings} from "../entity-table/entity-table.conf";
 
 const tableSettings = {
   columns: {
-    \n${outputFields2}\n
+ ${outputFields2}
   },
 };
 
@@ -60,10 +61,9 @@ export const config = {
   title: '${segment}',
   collectionUrlSegment: '${segment}',
   fields: [
-    
-{ name: 'createdts', type: 'date', component: 'datepicker' },
-{ name: 'modifiedts', type: 'date', component: 'datepicker' },
-${outputFields3}\n
+    { name: 'createdts', type: 'date', component: 'datepicker' },
+    { name: 'modifiedts', type: 'date', component: 'datepicker' },
+  ${outputFields3}
   ],
   tableSettings: merge({}, tableCommonSettings, stateMatrixTableSettings),
 };`
