@@ -10,9 +10,15 @@ module.exports = class extends Generator {
         type: 'input',
         name: 'inputFile',
         message: 'Inserisci il percorso del file JSON da utilizzare come input:'
+      },
+      {
+        type: 'input',
+        name: 'segment',
+        message: 'Inserisci il collectionUrlSegment:'
       }
     ]).then((answers) => {
       const inputFile = answers.inputFile;
+      const segment = answers.segment;
       const className = path.basename(inputFile, path.extname(inputFile));
       const inputFileData = fs.readFileSync(inputFile, 'utf8');
       const inputData = JSON.parse(inputFileData);
@@ -25,6 +31,9 @@ module.exports = class extends Generator {
         return `  ${key}: {
           title: '${key}'
         },`
+      }).join('\n');
+      const outputFields3 = Object.keys(inputData).map((key) => {
+        return `{ name: '${key}', type: '${typeof inputData[key]}'},`
       }).join('\n');
 
       this.fs.write(
@@ -45,6 +54,18 @@ const tableSettings = {
   columns: {
     \n${outputFields2}\n
   },
+};
+
+export const config = {
+  title: '${segment}',
+  collectionUrlSegment: '${segment}',
+  fields: [
+    
+{ name: 'createdts', type: 'date', component: 'datepicker' },
+{ name: 'modifiedts', type: 'date', component: 'datepicker' },
+${outputFields3}\n
+  ],
+  tableSettings: merge({}, tableCommonSettings, stateMatrixTableSettings),
 };`
       );
     });
