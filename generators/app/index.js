@@ -22,8 +22,8 @@ module.exports = class extends Generator {
       const className = path.basename(inputFile, path.extname(inputFile));
       const inputFileData = fs.readFileSync(inputFile, 'utf8');
       const inputData = JSON.parse(inputFileData);
-      const outputFile1 = `src/app/module/${className}.ts`;
-      const outputFile2 = `src/app/component/conf.ts`;
+      const outputFile1 = `src/app/model/${className}.ts`;
+      const outputFile2 = `src/app/custom-pages/test/conf.ts`;
 
       const outputFields = Object.keys(inputData).map((key) => {
         return `  ${key}: ${typeof inputData[key]};`
