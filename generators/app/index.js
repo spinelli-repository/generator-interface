@@ -27,11 +27,11 @@ module.exports = class extends Generator {
       const className = path.basename(inputFile, path.extname(inputFile));
       const inputFileData = fs.readFileSync(inputFile, 'utf8');
       const inputData = JSON.parse(inputFileData);
+
       const outputFile1 = `../backoffice/src/app/module/${className}.ts`;
       const outputFile2 = `../backoffice/src/app/custom-pages/${className}-page/${className}.conf.ts`;
       const outputFile3 = `../backoffice/src/app/custom-pages/${className}-page/${className}-details/${className}-details.component.ts`;
       const outputFile4 = `../backoffice/src/app/custom-pages/${className}-page/${className}-details/${className}-details.component.html`;
-
 
       const outputFields = Object.keys(inputData).map((key) => {
         return `  ${key}: ${typeof inputData[key]};`
