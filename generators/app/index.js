@@ -10,6 +10,10 @@ module.exports = class extends Generator {
         type: 'input',
         name: 'inputFile',
         message: 'Inserisci il percorso del file JSON da utilizzare come input:'
+      },      {
+        type: 'input',
+        name: 'title',
+        message: 'Inserisci il titolo'
       },
       {
         type: 'input',
@@ -19,17 +23,21 @@ module.exports = class extends Generator {
     ]).then((answers) => {
       const inputFile = answers.inputFile;
       const segment = answers.segment;
+      const title = answers.title;
       const className = path.basename(inputFile, path.extname(inputFile));
       const inputFileData = fs.readFileSync(inputFile, 'utf8');
       const inputData = JSON.parse(inputFileData);
-      const outputFile1 = `src/app/module/${className}.ts`;
-      const outputFile2 = `src/app/component/conf.ts`;
+      const outputFile1 = `../backoffice/src/app/module/${className}.ts`;
+      const outputFile2 = `../backoffice/src/app/custom-pages/${className}-page/${className}.conf.ts`;
+      const outputFile3 = `../backoffice/src/app/custom-pages/${className}-page/${className}-details/${className}-details.component.ts`;
+      const outputFile4 = `../backoffice/src/app/custom-pages/${className}-page/${className}-details/${className}-details.component.html`;
+
 
       const outputFields = Object.keys(inputData).map((key) => {
         return `  ${key}: ${typeof inputData[key]};`
       }).join('\n');
 
-      const outputFields2 = Object.keys(inputData).filter((key) => key != "id").map((key) => {
+      const outputFields2 = Object.keys(inputData).map((key) => {
         return `  ${key}: { \n    title: '${key}' \n   },`
       }).join('\n ');
 
@@ -40,16 +48,18 @@ module.exports = class extends Generator {
       this.fs.write(
         this.destinationPath(outputFile1),
         `
-import { UserGroup } from './usergroup';
+import { CommonEntity } from "./common-entity";
 
-export class ${className} extends test {\n${outputFields}\n}`
+export class ${className} extends CommonEntity {\n${outputFields}\n}`
       );
 
       this.fs.write(
         this.destinationPath(outputFile2),
         `
 import merge from 'lodash/merge';
-import {tableCommonSettings} from "../entity-table/entity-table.conf";
+import { AutocompleteEditorComponent } from '../../custom-ui/autocomplete-editor.component';
+import { SelectFilterComponent } from '../../custom-ui/select-filter.component';
+import {tableCommonSettings, tableDefaultButtons} from "../entity-table/entity-table.conf";
 
 const tableSettings = {
   columns: {
@@ -58,7 +68,7 @@ const tableSettings = {
 };
 
 export const config = {
-  title: '${segment}',
+  title: '${title}',
   collectionUrlSegment: '${segment}',
   fields: [
     { name: 'createdts', type: 'date', component: 'datepicker' },

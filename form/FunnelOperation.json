@@ -1,0 +1,11 @@
+{
+	"uid": "string",
+	"code": "string",
+	"utility": "string",
+	"type": "string",
+	"parentCode": "string",
+	"option": "string",
+	"defaultText": "string",
+	"defaultLink": "string",
+	"sfdcOperation": "string"
+}
