@@ -33,6 +33,8 @@ module.exports = class extends Generator {
       const outputFile3 = `../backoffice/src/app/custom-pages/${className}-page/${className}-details/${className}-details.component.ts`;
       const outputFile4 = `../backoffice/src/app/custom-pages/${className}-page/${className}-details/${className}-details.component.html`;
       const outputFile5 = `../backoffice/src/app/custom-pages/${className}-page/${className}-details/${className}-details.component.scss`;
+      const outputFile6 = `../backoffice/src/app/custom-pages/${className}-page/${className}.component.ts`;
+
 
       const outputFields = Object.keys(inputData).map((key) => {
         return `  ${key}: ${typeof inputData[key]};`
@@ -134,6 +136,47 @@ export class ${className}DetailsComponent extends EntityDetailsComponent<${class
       this.fs.write(
         this.destinationPath(outputFile5),
         ``
+
+      );
+      
+      this.fs.write(
+        this.destinationPath(outputFile6),
+        `
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { NbDialogService } from '@nebular/theme';
+import { ${className} } from '../../model/${className}';
+import { BackendIntegrationService } from '../../service/backend-integration.service';
+import { EntityTableComponent } from '../entity-table/entity-table/entity-table.component';
+import { FunnelOperationDetailsComponent } from './funnel-operation-details/funnel-operation-details.component';
+import * as configSettings from './${className}.conf';
+
+@Component({
+  selector: '${className}',
+  templateUrl: '../entity-table/entity-table/entity-table.component.html',
+  providers: [BackendIntegrationService],
+})
+export class ${className}Component extends EntityTableComponent<${className}> implements OnInit {
+  @Input() isDialog;
+  @Output() selectEntityFromDialog: EventEmitter<FunnelOperation> = new EventEmitter();
+  entityConfiguration = configSettings.config;
+
+  constructor(public backendIntegrationService: BackendIntegrationService, dialogService: NbDialogService) {
+    super(backendIntegrationService, dialogService);
+  }
+
+  onOpenDetail(event): void {
+    if(this.entityConfiguration['entityDetails'] !== 'false') {
+      const data: FunnelOperation = event.data;
+      if (this.isDialog) {
+        this.selectEntityFromDialog.emit(data);
+      } else {
+        this.backendIntegrationService.onRowSelect<FunnelOperation>(data, FunnelOperationDetailsComponent);
+      }
+    }
+  }
+
+
+}`
 
       );
     });
