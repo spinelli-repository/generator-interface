@@ -32,6 +32,7 @@ module.exports = class extends Generator {
       const outputFile2 = `../backoffice/src/app/custom-pages/${className}-page/${className}.conf.ts`;
       const outputFile3 = `../backoffice/src/app/custom-pages/${className}-page/${className}-details/${className}-details.component.ts`;
       const outputFile4 = `../backoffice/src/app/custom-pages/${className}-page/${className}-details/${className}-details.component.html`;
+      const outputFile5 = `../backoffice/src/app/custom-pages/${className}-page/${className}-details/${className}-details.component.scss`;
 
       const outputFields = Object.keys(inputData).map((key) => {
         return `  ${key}: ${typeof inputData[key]};`
@@ -77,6 +78,63 @@ export const config = {
   ],
   tableSettings: merge({}, tableCommonSettings, stateMatrixTableSettings),
 };`
+      );
+
+      this.fs.write(
+        this.destinationPath(outputFile3),
+        `
+import { Component, Input, OnInit } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
+import { NbDialogService, NbWindowRef } from '@nebular/theme';
+import { LocalDataSource } from 'ng2-smart-table';
+import { ${className} } from '../../../model/${className}';
+import { BackendIntegrationService } from '../../../service/backend-integration.service';
+import { EnvConfigurationService } from '../../../service/env-configuration';
+import { EntityDetailsComponent } from '../../entity-table/entity-details/entity-details.component';
+import * as configSettings from '../${className}.conf';
+
+@Component({
+  selector: 'funneloperations',
+  templateUrl: './${className}-details.component.html',
+  styleUrls: ['./${className}-details.component.scss']
+})
+export class ${className}DetailsComponent extends EntityDetailsComponent<${className}> implements OnInit{
+  @Input() entity: ${className};
+  @Input() dataSource: LocalDataSource;
+  entityConfiguration = configSettings.config;
+
+  constructor(
+    protected fb: FormBuilder,
+    protected backendIntegrationService: BackendIntegrationService,
+    protected windowRef: NbWindowRef,
+    public envConfigurationService:EnvConfigurationService,
+    protected dialogService: NbDialogService,
+  ) {
+    super(fb, backendIntegrationService, windowRef,envConfigurationService, dialogService);
+  }
+
+  ngOnInit() {
+    super.ngOnInit();
+  }
+
+  onClose() {
+    this.windowRef.close();
+  }
+}`
+
+      );
+
+      this.fs.write(
+        this.destinationPath(outputFile4),
+        `
+<entity-details [entityConfiguration]="entityConfiguration" [entity]="entity" [dataSource]="dataSource"></entity-details>`
+
+      );
+
+      this.fs.write(
+        this.destinationPath(outputFile5),
+        ``
+
       );
     });
   }
