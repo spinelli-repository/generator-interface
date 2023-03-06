@@ -24,16 +24,18 @@ module.exports = class extends Generator {
       const inputFile = answers.inputFile;
       const segment = answers.segment;
       const title = answers.title;
-      const className = path.basename(inputFile, path.extname(inputFile));
       const inputFileData = fs.readFileSync(inputFile, 'utf8');
       const inputData = JSON.parse(inputFileData);
 
-      const outputFile1 = `../backoffice/src/app/module/${className}.ts`;
-      const outputFile2 = `../backoffice/src/app/custom-pages/${className}-page/${className}.conf.ts`;
-      const outputFile3 = `../backoffice/src/app/custom-pages/${className}-page/${className}-details/${className}-details.component.ts`;
-      const outputFile4 = `../backoffice/src/app/custom-pages/${className}-page/${className}-details/${className}-details.component.html`;
-      const outputFile5 = `../backoffice/src/app/custom-pages/${className}-page/${className}-details/${className}-details.component.scss`;
-      const outputFile6 = `../backoffice/src/app/custom-pages/${className}-page/${className}.component.ts`;
+      const segmentLow = segment.toLowerCase();
+      const segmentUp = segmentLow.charAt(0).toUpperCase() + segmentLow.slice(1);
+
+      const outputFile1 = `../backoffice/src/app/model/${segmentLow}.ts`;
+      const outputFile2 = `../backoffice/src/app/custom-pages/${segmentLow}-page/${segmentLow}.conf.ts`;
+      const outputFile3 = `../backoffice/src/app/custom-pages/${segmentLow}-page/${segmentLow}-details/${segmentLow}-details.component.ts`;
+      const outputFile4 = `../backoffice/src/app/custom-pages/${segmentLow}-page/${segmentLow}-details/${segmentLow}-details.component.html`;
+      const outputFile5 = `../backoffice/src/app/custom-pages/${segmentLow}-page/${segmentLow}-details/${segmentLow}-details.component.scss`;
+      const outputFile6 = `../backoffice/src/app/custom-pages/${segmentLow}-page/${segmentLow}.component.ts`;
 
 
       const outputFields = Object.keys(inputData).map((key) => {
@@ -41,7 +43,7 @@ module.exports = class extends Generator {
       }).join('\n');
 
       const outputFields2 = Object.keys(inputData).map((key) => {
-        return `  ${key}: { \n    title: '${key}' \n   },`
+        return `  ${key}: { \n    title: '${key}', \n   },`
       }).join('\n ');
 
       const outputFields3 = Object.keys(inputData).map((key) => {
@@ -53,7 +55,7 @@ module.exports = class extends Generator {
         `
 import { CommonEntity } from "./common-entity";
 
-export class ${className} extends CommonEntity {\n${outputFields}\n}`
+export class ${segmentUp} extends CommonEntity {\n${outputFields}\n}`
       );
 
       this.fs.write(
@@ -64,7 +66,7 @@ import { AutocompleteEditorComponent } from '../../custom-ui/autocomplete-editor
 import { SelectFilterComponent } from '../../custom-ui/select-filter.component';
 import {tableCommonSettings, tableDefaultButtons} from "../entity-table/entity-table.conf";
 
-const tableSettings = {
+const ${segmentUp}TableSettings = {
   columns: {
  ${outputFields2}
   },
@@ -72,13 +74,13 @@ const tableSettings = {
 
 export const config = {
   title: '${title}',
-  collectionUrlSegment: '${segment}',
+  collectionUrlSegment: '${segmentLow}',
   fields: [
     { name: 'createdts', type: 'date', component: 'datepicker' },
     { name: 'modifiedts', type: 'date', component: 'datepicker' },
   ${outputFields3}
   ],
-  tableSettings: merge({}, tableCommonSettings, stateMatrixTableSettings),
+  tableSettings: merge({}, tableCommonSettings, ${segmentUp}TableSettings),
 };`
       );
 
@@ -89,19 +91,19 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { NbDialogService, NbWindowRef } from '@nebular/theme';
 import { LocalDataSource } from 'ng2-smart-table';
-import { ${className} } from '../../../model/${className}';
+import { ${segmentUp} } from '../../../model/${segmentLow}';
 import { BackendIntegrationService } from '../../../service/backend-integration.service';
 import { EnvConfigurationService } from '../../../service/env-configuration';
 import { EntityDetailsComponent } from '../../entity-table/entity-details/entity-details.component';
-import * as configSettings from '../${className}.conf';
+import * as configSettings from '../${segmentLow}.conf';
 
 @Component({
   selector: 'funneloperations',
-  templateUrl: './${className}-details.component.html',
-  styleUrls: ['./${className}-details.component.scss']
+  templateUrl: './${segmentLow}-details.component.html',
+  styleUrls: ['./${segmentLow}-details.component.scss']
 })
-export class ${className}DetailsComponent extends EntityDetailsComponent<${className}> implements OnInit{
-  @Input() entity: ${className};
+export class ${segmentUp}DetailsComponent extends EntityDetailsComponent<${segmentUp}> implements OnInit{
+  @Input() entity: ${segmentUp};
   @Input() dataSource: LocalDataSource;
   entityConfiguration = configSettings.config;
 
@@ -144,18 +146,18 @@ export class ${className}DetailsComponent extends EntityDetailsComponent<${class
         `
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { NbDialogService } from '@nebular/theme';
-import { ${className} } from '../../model/${className}';
+import { ${segmentUp} } from '../../model/${segmentLow}';
 import { BackendIntegrationService } from '../../service/backend-integration.service';
 import { EntityTableComponent } from '../entity-table/entity-table/entity-table.component';
 import { FunnelOperationDetailsComponent } from './funnel-operation-details/funnel-operation-details.component';
-import * as configSettings from './${className}.conf';
+import * as configSettings from './${segmentLow}.conf';
 
 @Component({
-  selector: '${className}',
+  selector: '${segmentLow}',
   templateUrl: '../entity-table/entity-table/entity-table.component.html',
   providers: [BackendIntegrationService],
 })
-export class ${className}Component extends EntityTableComponent<${className}> implements OnInit {
+export class ${segmentUp}Component extends EntityTableComponent<${segmentUp}> implements OnInit {
   @Input() isDialog;
   @Output() selectEntityFromDialog: EventEmitter<FunnelOperation> = new EventEmitter();
   entityConfiguration = configSettings.config;
