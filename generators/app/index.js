@@ -50,7 +50,11 @@ module.exports = class extends Generator {
         return `  ${key}: { \n    title: '${key}', \n   },`
       }).join('\n ');
 
-      const outputFields3 = Object.keys(inputData).map((key) => {
+      const outputFieldsUid = Object.keys(inputData).filter((key) => key == 'uid').map((key) => {
+        return `  { name: '${key}', type: '${typeof inputData[key]} primarykey: true'},`
+      }).join('\n ');
+
+      const outputFields3 = Object.keys(inputData).filter((key) => key != 'uid').map((key) => {
         return `  { name: '${key}', type: '${typeof inputData[key]}'},`
       }).join('\n  ');
 
@@ -82,6 +86,7 @@ export const config = {
   fields: [
     { name: 'createdts', type: 'date', component: 'datepicker' },
     { name: 'modifiedts', type: 'date', component: 'datepicker' },
+  ${outputFieldsUid}
   ${outputFields3}
   ],
   tableSettings: merge({}, tableCommonSettings, ${segmentUp}TableSettings),
@@ -102,7 +107,7 @@ import { EntityDetailsComponent } from '../../entity-table/entity-details/entity
 import * as configSettings from '../${segmentLow}.conf';
 
 @Component({
-  selector: 'funneloperations',
+  selector: '${segmentLow}',
   templateUrl: './${segmentLow}-details.component.html',
   styleUrls: ['./${segmentLow}-details.component.scss']
 })
@@ -153,7 +158,7 @@ import { NbDialogService } from '@nebular/theme';
 import { ${segmentUp} } from '../../model/${segmentLow}';
 import { BackendIntegrationService } from '../../service/backend-integration.service';
 import { EntityTableComponent } from '../entity-table/entity-table/entity-table.component';
-import { FunnelOperationDetailsComponent } from './funnel-operation-details/funnel-operation-details.component';
+import { ${segmentUp}DetailsComponent } from './${segmentLow}-details/${segmentLow}-details.component';
 import * as configSettings from './${segmentLow}.conf';
 
 @Component({
@@ -188,20 +193,24 @@ export class ${segmentUp}Component extends EntityTableComponent<${segmentUp}> im
     });
   }
 
-  writing() {
+  writingcomp() {
     const moduleName = 'app.module';
     const moduleFileName = moduleName.replace(/-/g, '_');
     const componentClassName = compname;
     const componentFileName = componentClassName.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
     const componentImport = `import { ${componentClassName}Component } from './custom-pages/${compnamelow}-page/${componentFileName}.component';\n`;
     const componentDeclaration = `    ${componentClassName}Component,\n`;
+    const componentImportDetail = `import { ${componentClassName}DetailsComponent } from './custom-pages/${compnamelow}-page/${compnamelow}-details/${componentFileName}.component';\n`;
+    const componentDeclarationDetail= `    ${componentClassName}DetailsComponent,\n`;
     
     const moduleFile = this.fs.read(this.destinationPath(`../backoffice/src/app/${moduleFileName.toLowerCase()}.ts`));
     let newModuleFile = moduleFile.replace(/(import.*;)\n/, `$1\n${componentImport}`);
     newModuleFile = newModuleFile.replace(/(declarations:\s*\[[\s\S]*?)(\s*])/m, `$1\n${componentDeclaration}  ]`);
-    
-    
+
+    newModuleFile = newModuleFile.replace(/(import.*;)\n/, `$1\n${componentImportDetail}`);
+    newModuleFile = newModuleFile.replace(/(declarations:\s*\[[\s\S]*?)(\s*])/m, `$1\n${componentDeclarationDetail}  ]`);
+
     this.fs.write(this.destinationPath(`../backoffice/src/app/${moduleFileName.toLowerCase()}.ts`), newModuleFile);
   }
-
+  
 }
