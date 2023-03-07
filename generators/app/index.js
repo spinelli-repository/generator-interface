@@ -51,7 +51,7 @@ module.exports = class extends Generator {
       }).join('\n ');
 
       const outputFieldsUid = Object.keys(inputData).filter((key) => key == 'uid').map((key) => {
-        return `  { name: '${key}', type: '${typeof inputData[key]} primarykey: true'},`
+        return `  { name: '${key}', type: '${typeof inputData[key]}', primarykey: true},`
       }).join('\n ');
 
       const outputFields3 = Object.keys(inputData).filter((key) => key != 'uid').map((key) => {
@@ -168,7 +168,7 @@ import * as configSettings from './${segmentLow}.conf';
 })
 export class ${segmentUp}Component extends EntityTableComponent<${segmentUp}> implements OnInit {
   @Input() isDialog;
-  @Output() selectEntityFromDialog: EventEmitter<FunnelOperation> = new EventEmitter();
+  @Output() selectEntityFromDialog: EventEmitter<${segmentUp}> = new EventEmitter();
   entityConfiguration = configSettings.config;
 
   constructor(public backendIntegrationService: BackendIntegrationService, dialogService: NbDialogService) {
@@ -200,7 +200,7 @@ export class ${segmentUp}Component extends EntityTableComponent<${segmentUp}> im
     const componentFileName = componentClassName.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
     const componentImport = `import { ${componentClassName}Component } from './custom-pages/${compnamelow}-page/${componentFileName}.component';\n`;
     const componentDeclaration = `    ${componentClassName}Component,\n`;
-    const componentImportDetail = `import { ${componentClassName}DetailsComponent } from './custom-pages/${compnamelow}-page/${compnamelow}-details/${componentFileName}.component';\n`;
+    const componentImportDetail = `import { ${componentClassName}DetailsComponent } from './custom-pages/${compnamelow}-page/${compnamelow}-details/${componentFileName}.details.component';\n`;
     const componentDeclarationDetail= `    ${componentClassName}DetailsComponent,\n`;
     
     const moduleFile = this.fs.read(this.destinationPath(`../backoffice/src/app/${moduleFileName.toLowerCase()}.ts`));
