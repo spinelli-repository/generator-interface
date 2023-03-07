@@ -2,6 +2,8 @@ const Generator = require('yeoman-generator');
 const fs = require('fs');
 const path = require('path');
 
+let compname = '';
+let compnamelow = '';
 
 module.exports = class extends Generator {
   prompting() {
@@ -29,6 +31,8 @@ module.exports = class extends Generator {
 
       const segmentLow = segment.toLowerCase();
       const segmentUp = segmentLow.charAt(0).toUpperCase() + segmentLow.slice(1);
+      compname = segmentUp;
+      compnamelow = segmentLow;
 
       const outputFile1 = `../backoffice/src/app/model/${segmentLow}.ts`;
       const outputFile2 = `../backoffice/src/app/custom-pages/${segmentLow}-page/${segmentLow}.conf.ts`;
@@ -183,4 +187,21 @@ export class ${segmentUp}Component extends EntityTableComponent<${segmentUp}> im
       );
     });
   }
+
+  writing() {
+    const moduleName = 'app.module';
+    const moduleFileName = moduleName.replace(/-/g, '_');
+    const componentClassName = compname;
+    const componentFileName = componentClassName.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+    const componentImport = `import { ${componentClassName}Component } from './custom-pages/${compnamelow}-page/${componentFileName}.component';\n`;
+    const componentDeclaration = `    ${componentClassName}Component,\n`;
+    
+    const moduleFile = this.fs.read(this.destinationPath(`../backoffice/src/app/${moduleFileName.toLowerCase()}.ts`));
+    let newModuleFile = moduleFile.replace(/(import.*;)\n/, `$1\n${componentImport}`);
+    newModuleFile = newModuleFile.replace(/(declarations:\s*\[[\s\S]*?)(\s*])/m, `$1\n${componentDeclaration}  ]`);
+    
+    
+    this.fs.write(this.destinationPath(`../backoffice/src/app/${moduleFileName.toLowerCase()}.ts`), newModuleFile);
+  }
+
 }
