@@ -177,11 +177,11 @@ export class ${segmentUp}Component extends EntityTableComponent<${segmentUp}> im
 
   onOpenDetail(event): void {
     if(this.entityConfiguration['entityDetails'] !== 'false') {
-      const data: FunnelOperation = event.data;
+      const data: ${segmentUp} = event.data;
       if (this.isDialog) {
         this.selectEntityFromDialog.emit(data);
       } else {
-        this.backendIntegrationService.onRowSelect<FunnelOperation>(data, FunnelOperationDetailsComponent);
+        this.backendIntegrationService.onRowSelect<${segmentUp}>(data, ${segmentUp}DetailsComponent);
       }
     }
   }
