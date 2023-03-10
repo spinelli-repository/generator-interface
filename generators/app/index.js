@@ -4,6 +4,7 @@ const path = require('path');
 
 let compname = '';
 let compnamelow = '';
+let titleBO = '';
 
 module.exports = class extends Generator {
   prompting() {
@@ -33,6 +34,7 @@ module.exports = class extends Generator {
       const segmentUp = segmentLow.charAt(0).toUpperCase() + segmentLow.slice(1);
       compname = segmentUp;
       compnamelow = segmentLow;
+      titleBO = title;
 
       const outputFile1 = `../backoffice/src/app/model/${segmentLow}.ts`;
       const outputFile2 = `../backoffice/src/app/custom-pages/${segmentLow}-page/${segmentLow}.conf.ts`;
@@ -194,23 +196,65 @@ export class ${segmentUp}Component extends EntityTableComponent<${segmentUp}> im
   }
 
   writingcomp() {
+    const comment = "//YEOMAN\n";
+    const commentImp = "//IMPYEOMAN";
+    const regex = /\/\/YEOMAN/;
+    const regexImp = /\/\/IMPYEOMAN/;
     const moduleName = 'app.module';
     const moduleFileName = moduleName.replace(/-/g, '_');
     const componentClassName = compname;
     const componentFileName = componentClassName.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
     const componentImport = `import { ${componentClassName}Component } from './custom-pages/${compnamelow}-page/${componentFileName}.component';\n`;
+    const componentImportRouting = `import { ${componentClassName}Component } from './custom-pages/${compnamelow}-page/${componentFileName}.component';`;
     const componentDeclaration = `    ${componentClassName}Component,\n`;
     const componentImportDetail = `import { ${componentClassName}DetailsComponent } from './custom-pages/${compnamelow}-page/${compnamelow}-details/${componentFileName}-details.component';\n`;
     const componentDeclarationDetail= `    ${componentClassName}DetailsComponent,\n`;
+    const menu = comment + ` 
+  {
+    title: '${titleBO}',
+    data: {
+      permission: 'view',
+      resource: '${compnamelow}',
+    },
+    children: [
+      {
+        title: '${compname}',
+        link: '${compnamelow}',
+        data: {
+          permission: 'view',
+          resource: '${compnamelow}',
+        },
+      },
+    ]
+  },`;
+
+    const routing = comment + `
+      {
+        path: '${compnamelow}',
+        component: ${compname}Component,
+      },`;
     
+    const routingImp = commentImp + `
+${componentImportRouting}`;
+
     const moduleFile = this.fs.read(this.destinationPath(`../backoffice/src/app/${moduleFileName.toLowerCase()}.ts`));
     let newModuleFile = moduleFile.replace(/(import.*;)\n/, `$1\n${componentImport}`);
     newModuleFile = newModuleFile.replace(/(declarations:\s*\[[\s\S]*?)(\s*])/m, `$1\n${componentDeclaration}  ]`);
-
     newModuleFile = newModuleFile.replace(/(import.*;)\n/, `$1\n${componentImportDetail}`);
     newModuleFile = newModuleFile.replace(/(declarations:\s*\[[\s\S]*?)(\s*])/m, `$1\n${componentDeclarationDetail}  ]`);
 
+    const routingFile = this.fs.read(this.destinationPath(`../backoffice/src/app/util/app-routing.module.ts`));
+    let newRoutingFile = routingFile.replace(regexImp, routingImp);
+    newRoutingFile = newRoutingFile.replace(regex, routing);
+
+    const menuFile = this.fs.read(this.destinationPath(`../backoffice/src/app/pages/ui-features/bo-home-menu.ts`));
+    let newMenuFile = menuFile.replace(regex, menu);
+    
     this.fs.write(this.destinationPath(`../backoffice/src/app/${moduleFileName.toLowerCase()}.ts`), newModuleFile);
+    this.fs.write(this.destinationPath(`../backoffice/src/app/utils/app-routing.module.ts`), newRoutingFile);
+    this.fs.write(this.destinationPath(`../backoffice/src/app/utils/bo-home-menu.ts`), newMenuFile);
+
+
   }
   
 }
