@@ -243,7 +243,7 @@ ${componentImportRouting}`;
     newModuleFile = newModuleFile.replace(/(import.*;)\n/, `$1\n${componentImportDetail}`);
     newModuleFile = newModuleFile.replace(/(declarations:\s*\[[\s\S]*?)(\s*])/m, `$1\n${componentDeclarationDetail}  ]`);
 
-    const routingFile = this.fs.read(this.destinationPath(`../backoffice/src/app/util/app-routing.module.ts`));
+    const routingFile = this.fs.read(this.destinationPath(`../backoffice/src/app/app-routing.module.ts`));
     let newRoutingFile = routingFile.replace(regexImp, routingImp);
     newRoutingFile = newRoutingFile.replace(regex, routing);
 
@@ -251,7 +251,7 @@ ${componentImportRouting}`;
     let newMenuFile = menuFile.replace(regex, menu);
     
     this.fs.write(this.destinationPath(`../backoffice/src/app/${moduleFileName.toLowerCase()}.ts`), newModuleFile);
-    this.fs.write(this.destinationPath(`../backoffice/src/app/util/app-routing.module.ts`), newRoutingFile);
+    this.fs.write(this.destinationPath(`../backoffice/src/app/app-routing.module.ts`), newRoutingFile);
     this.fs.write(this.destinationPath(`../backoffice/src/app/pages/ui-features/bo-home-menu.ts`), newMenuFile);
 
 
