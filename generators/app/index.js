@@ -4,7 +4,7 @@ const path = require('path');
 
 let compnameCapitalized = '';
 let compnameLower = '';
-let titleBO = '';
+let title = '';
 
 module.exports = class extends Generator {
   prompting() {
@@ -26,13 +26,11 @@ module.exports = class extends Generator {
     ]).then((answers) => {
       const inputFile = answers.inputFile;
       const segment = answers.segment;
-      const title = answers.title;
       const inputFileData = fs.readFileSync(inputFile, 'utf8');
       const inputData = JSON.parse(inputFileData);
-
+      title = answers.title;
       compnameLower  = segment.toLowerCase();
       compnameCapitalized = compnameLower.charAt(0).toUpperCase() + compnameLower.slice(1);
-      titleBO = title;
 
       const outputFile1 = `../backoffice/src/app/model/${compnameLower}.ts`;
       const outputFile2 = `../backoffice/src/app/custom-pages/${compnameLower}-page/${compnameLower}.conf.ts`;
@@ -194,10 +192,10 @@ export class ${compnameCapitalized}Component extends EntityTableComponent<${comp
   }
 
   writingcomp() {
-    const comment = "//YEOMAN\n";
-    const commentImp = "//IMPYEOMAN";
-    const regex = /\/\/YEOMAN/;
-    const regexImp = /\/\/IMPYEOMAN/;
+    const comment = "//CODE_YEOMAN\n";
+    const commentImp = "//IMP_YEOMAN\n";
+    const regex = /\/\/CODE_YEOMAN/;
+    const regexImp = /\/\/IMP_YEOMAN/;
     const moduleName = 'app.module';
     const moduleFileName = moduleName.replace(/-/g, '_');
     const componentFileName = compnameCapitalized.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
@@ -208,7 +206,7 @@ export class ${compnameCapitalized}Component extends EntityTableComponent<${comp
     const componentDeclarationDetail= `    ${compnameCapitalized}DetailsComponent,\n`;
     const menu = comment + ` 
   {
-    title: '${titleBO}',
+    title: '${title}',
     data: {
       permission: 'view',
       resource: '${compnameLower}',
@@ -216,10 +214,10 @@ export class ${compnameCapitalized}Component extends EntityTableComponent<${comp
   },`;
 
     const routing = comment + `
-      {
-        path: '${compnameLower}',
-        component: ${compnameCapitalized}Component,
-      },`;
+    {
+      path: '${compnameLower}',
+      component: ${compnameCapitalized}Component,
+    },`;
     
     const routingImp = commentImp + `
 ${componentImportRouting}`;
