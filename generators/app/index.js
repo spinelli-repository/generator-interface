@@ -2,8 +2,8 @@ const Generator = require('yeoman-generator');
 const fs = require('fs');
 const path = require('path');
 
-let compname = '';
-let compnamelow = '';
+let compnameCapitalized = '';
+let compnameLower = '';
 let titleBO = '';
 
 module.exports = class extends Generator {
@@ -30,18 +30,16 @@ module.exports = class extends Generator {
       const inputFileData = fs.readFileSync(inputFile, 'utf8');
       const inputData = JSON.parse(inputFileData);
 
-      const segmentLow = segment.toLowerCase();
-      const segmentUp = segmentLow.charAt(0).toUpperCase() + segmentLow.slice(1);
-      compname = segmentUp;
-      compnamelow = segmentLow;
+      compnameLower  = segment.toLowerCase();
+      compnameCapitalized = compnameLower.charAt(0).toUpperCase() + compnameLower.slice(1);
       titleBO = title;
 
-      const outputFile1 = `../backoffice/src/app/model/${segmentLow}.ts`;
-      const outputFile2 = `../backoffice/src/app/custom-pages/${segmentLow}-page/${segmentLow}.conf.ts`;
-      const outputFile3 = `../backoffice/src/app/custom-pages/${segmentLow}-page/${segmentLow}-details/${segmentLow}-details.component.ts`;
-      const outputFile4 = `../backoffice/src/app/custom-pages/${segmentLow}-page/${segmentLow}-details/${segmentLow}-details.component.html`;
-      const outputFile5 = `../backoffice/src/app/custom-pages/${segmentLow}-page/${segmentLow}-details/${segmentLow}-details.component.scss`;
-      const outputFile6 = `../backoffice/src/app/custom-pages/${segmentLow}-page/${segmentLow}.component.ts`;
+      const outputFile1 = `../backoffice/src/app/model/${compnameLower}.ts`;
+      const outputFile2 = `../backoffice/src/app/custom-pages/${compnameLower}-page/${compnameLower}.conf.ts`;
+      const outputFile3 = `../backoffice/src/app/custom-pages/${compnameLower}-page/${compnameLower}-details/${compnameLower}-details.component.ts`;
+      const outputFile4 = `../backoffice/src/app/custom-pages/${compnameLower}-page/${compnameLower}-details/${compnameLower}-details.component.html`;
+      const outputFile5 = `../backoffice/src/app/custom-pages/${compnameLower}-page/${compnameLower}-details/${compnameLower}-details.component.scss`;
+      const outputFile6 = `../backoffice/src/app/custom-pages/${compnameLower}-page/${compnameLower}.component.ts`;
 
 
       const outputFields = Object.keys(inputData).map((key) => {
@@ -65,7 +63,7 @@ module.exports = class extends Generator {
         `
 import { CommonEntity } from "./common-entity";
 
-export class ${segmentUp} extends CommonEntity {\n${outputFields}\n}`
+export class ${compnameCapitalized} extends CommonEntity {\n${outputFields}\n}`
       );
 
       this.fs.write(
@@ -76,7 +74,7 @@ import { AutocompleteEditorComponent } from '../../custom-ui/autocomplete-editor
 import { SelectFilterComponent } from '../../custom-ui/select-filter.component';
 import {tableCommonSettings, tableDefaultButtons} from "../entity-table/entity-table.conf";
 
-const ${segmentUp}TableSettings = {
+const ${compnameCapitalized}TableSettings = {
   columns: {
  ${outputFields2}
   },
@@ -84,14 +82,14 @@ const ${segmentUp}TableSettings = {
 
 export const config = {
   title: '${title}',
-  collectionUrlSegment: '${segmentLow}',
+  collectionUrlSegment: '${compnameLower}',
   fields: [
     { name: 'createdts', type: 'date', component: 'datepicker' },
     { name: 'modifiedts', type: 'date', component: 'datepicker' },
   ${outputFieldsUid}
   ${outputFields3}
   ],
-  tableSettings: merge({}, tableCommonSettings, ${segmentUp}TableSettings),
+  tableSettings: merge({}, tableCommonSettings, ${compnameCapitalized}TableSettings),
 };`
       );
 
@@ -102,19 +100,19 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { NbDialogService, NbWindowRef } from '@nebular/theme';
 import { LocalDataSource } from 'ng2-smart-table';
-import { ${segmentUp} } from '../../../model/${segmentLow}';
+import { ${compnameCapitalized} } from '../../../model/${compnameLower}';
 import { BackendIntegrationService } from '../../../service/backend-integration.service';
 import { EnvConfigurationService } from '../../../service/env-configuration';
 import { EntityDetailsComponent } from '../../entity-table/entity-details/entity-details.component';
-import * as configSettings from '../${segmentLow}.conf';
+import * as configSettings from '../${compnameLower}.conf';
 
 @Component({
-  selector: '${segmentLow}',
-  templateUrl: './${segmentLow}-details.component.html',
-  styleUrls: ['./${segmentLow}-details.component.scss']
+  selector: '${compnameLower}',
+  templateUrl: './${compnameLower}-details.component.html',
+  styleUrls: ['./${compnameLower}-details.component.scss']
 })
-export class ${segmentUp}DetailsComponent extends EntityDetailsComponent<${segmentUp}> implements OnInit{
-  @Input() entity: ${segmentUp};
+export class ${compnameCapitalized}DetailsComponent extends EntityDetailsComponent<${compnameCapitalized}> implements OnInit{
+  @Input() entity: ${compnameCapitalized};
   @Input() dataSource: LocalDataSource;
   entityConfiguration = configSettings.config;
 
@@ -157,20 +155,20 @@ export class ${segmentUp}DetailsComponent extends EntityDetailsComponent<${segme
         `
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { NbDialogService } from '@nebular/theme';
-import { ${segmentUp} } from '../../model/${segmentLow}';
+import { ${compnameCapitalized} } from '../../model/${compnameLower}';
 import { BackendIntegrationService } from '../../service/backend-integration.service';
 import { EntityTableComponent } from '../entity-table/entity-table/entity-table.component';
-import { ${segmentUp}DetailsComponent } from './${segmentLow}-details/${segmentLow}-details.component';
-import * as configSettings from './${segmentLow}.conf';
+import { ${compnameCapitalized}DetailsComponent } from './${compnameLower}-details/${compnameLower}-details.component';
+import * as configSettings from './${compnameLower}.conf';
 
 @Component({
-  selector: '${segmentLow}',
+  selector: '${compnameLower}',
   templateUrl: '../entity-table/entity-table/entity-table.component.html',
   providers: [BackendIntegrationService],
 })
-export class ${segmentUp}Component extends EntityTableComponent<${segmentUp}> implements OnInit {
+export class ${compnameCapitalized}Component extends EntityTableComponent<${compnameCapitalized}> implements OnInit {
   @Input() isDialog;
-  @Output() selectEntityFromDialog: EventEmitter<${segmentUp}> = new EventEmitter();
+  @Output() selectEntityFromDialog: EventEmitter<${compnameCapitalized}> = new EventEmitter();
   entityConfiguration = configSettings.config;
 
   constructor(public backendIntegrationService: BackendIntegrationService, dialogService: NbDialogService) {
@@ -179,11 +177,11 @@ export class ${segmentUp}Component extends EntityTableComponent<${segmentUp}> im
 
   onOpenDetail(event): void {
     if(this.entityConfiguration['entityDetails'] !== 'false') {
-      const data: ${segmentUp} = event.data;
+      const data: ${compnameCapitalized} = event.data;
       if (this.isDialog) {
         this.selectEntityFromDialog.emit(data);
       } else {
-        this.backendIntegrationService.onRowSelect<${segmentUp}>(data, ${segmentUp}DetailsComponent);
+        this.backendIntegrationService.onRowSelect<${compnameCapitalized}>(data, ${compnameCapitalized}DetailsComponent);
       }
     }
   }
@@ -202,36 +200,25 @@ export class ${segmentUp}Component extends EntityTableComponent<${segmentUp}> im
     const regexImp = /\/\/IMPYEOMAN/;
     const moduleName = 'app.module';
     const moduleFileName = moduleName.replace(/-/g, '_');
-    const componentClassName = compname;
-    const componentFileName = componentClassName.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
-    const componentImport = `import { ${componentClassName}Component } from './custom-pages/${compnamelow}-page/${componentFileName}.component';\n`;
-    const componentImportRouting = `import { ${componentClassName}Component } from './custom-pages/${compnamelow}-page/${componentFileName}.component';`;
-    const componentDeclaration = `    ${componentClassName}Component,\n`;
-    const componentImportDetail = `import { ${componentClassName}DetailsComponent } from './custom-pages/${compnamelow}-page/${compnamelow}-details/${componentFileName}-details.component';\n`;
-    const componentDeclarationDetail= `    ${componentClassName}DetailsComponent,\n`;
+    const componentFileName = compnameCapitalized.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+    const componentImport = `import { ${compnameCapitalized}Component } from './custom-pages/${compnameLower}-page/${componentFileName}.component';\n`;
+    const componentImportRouting = `import { ${compnameCapitalized}Component } from './custom-pages/${compnameLower}-page/${componentFileName}.component';`;
+    const componentDeclaration = `    ${compnameCapitalized}Component,\n`;
+    const componentImportDetail = `import { ${compnameCapitalized}DetailsComponent } from './custom-pages/${compnameLower}-page/${compnameLower}-details/${componentFileName}-details.component';\n`;
+    const componentDeclarationDetail= `    ${compnameCapitalized}DetailsComponent,\n`;
     const menu = comment + ` 
   {
     title: '${titleBO}',
     data: {
       permission: 'view',
-      resource: '${compnamelow}',
+      resource: '${compnameLower}',
     },
-    children: [
-      {
-        title: '${compname}',
-        link: '${compnamelow}',
-        data: {
-          permission: 'view',
-          resource: '${compnamelow}',
-        },
-      },
-    ]
   },`;
 
     const routing = comment + `
       {
-        path: '${compnamelow}',
-        component: ${compname}Component,
+        path: '${compnameLower}',
+        component: ${compnameCapitalized}Component,
       },`;
     
     const routingImp = commentImp + `
