@@ -251,8 +251,8 @@ ${componentImportRouting}`;
     let newMenuFile = menuFile.replace(regex, menu);
     
     this.fs.write(this.destinationPath(`../backoffice/src/app/${moduleFileName.toLowerCase()}.ts`), newModuleFile);
-    this.fs.write(this.destinationPath(`../backoffice/src/app/utils/app-routing.module.ts`), newRoutingFile);
-    this.fs.write(this.destinationPath(`../backoffice/src/app/utils/bo-home-menu.ts`), newMenuFile);
+    this.fs.write(this.destinationPath(`../backoffice/src/app/util/app-routing.module.ts`), newRoutingFile);
+    this.fs.write(this.destinationPath(`../backoffice/src/app/pages/ui-features/bo-home-menu.ts`), newMenuFile);
 
 
   }
