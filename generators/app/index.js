@@ -247,12 +247,12 @@ ${componentImportRouting}`;
     let newRoutingFile = routingFile.replace(regexImp, routingImp);
     newRoutingFile = newRoutingFile.replace(regex, routing);
 
-    const menuFile = this.fs.read(this.destinationPath(`../backoffice/src/app/pages/ui-features/bo-home-menu.ts`));
+    const menuFile = this.fs.read(this.destinationPath(`../backoffice/src/app/pages/bo-home-menu.ts`));
     let newMenuFile = menuFile.replace(regex, menu);
     
     this.fs.write(this.destinationPath(`../backoffice/src/app/${moduleFileName.toLowerCase()}.ts`), newModuleFile);
     this.fs.write(this.destinationPath(`../backoffice/src/app/app-routing.module.ts`), newRoutingFile);
-    this.fs.write(this.destinationPath(`../backoffice/src/app/pages/ui-features/bo-home-menu.ts`), newMenuFile);
+    this.fs.write(this.destinationPath(`../backoffice/src/app/pages/bo-home-menu.ts`), newMenuFile);
 
 
   }
