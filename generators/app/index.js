@@ -6,6 +6,10 @@ let compnameCapitalized = '';
 let compnameLower = '';
 let title = '';
 
+var isUid = false;
+let repoId = '';
+let columnId = '';
+
 module.exports = class extends Generator {
   prompting() {
     return this.prompt([
@@ -39,6 +43,10 @@ module.exports = class extends Generator {
       const outputFile5 = `../backoffice/src/app/custom-pages/${compnameLower}-page/${compnameLower}-details/${compnameLower}-details.component.scss`;
       const outputFile6 = `../backoffice/src/app/custom-pages/${compnameLower}-page/${compnameLower}.component.ts`;
 
+      const outputFile7 = `../commondto/src/main/java/it/acea/selfcare/commondto/persistence/model/${compnameCapitalized}Model.java`;
+      const outputFile8 = `../commondto/src/main/java/it/acea/selfcare/commondto/repository/${compnameCapitalized}Repository.java`;
+      const outputFile9 = `../commondto/src/main/java/it/acea/selfcare/commondto/backoffice/repository/BO_${compnameCapitalized}Repository.java`;
+
 
       const outputFields = Object.keys(inputData).map((key) => {
         return `  ${key}: ${typeof inputData[key]};`
@@ -49,12 +57,29 @@ module.exports = class extends Generator {
       }).join('\n ');
 
       const outputFieldsUid = Object.keys(inputData).filter((key) => key == 'uid').map((key) => {
+        isUid = true;
         return `  { name: '${key}', type: '${typeof inputData[key]}', primarykey: true},`
       }).join('\n ');
 
       const outputFields3 = Object.keys(inputData).filter((key) => key != 'uid').map((key) => {
         return `  { name: '${key}', type: '${typeof inputData[key]}'},`
       }).join('\n  ');
+
+      repoId    = isUid ? 'BigInteger' : 'String';
+      columnId  = isUid ? 'uid' : 'code';
+
+      const outputFieldsUidBE = Object.keys(inputData).filter((key) => key == 'uid').map((key) => {
+        return `  private BigInteger uid;`
+      }).join('\n ');
+
+      const outputFieldsCodeBE = Object.keys(inputData).filter((key) => key == 'code').map((key) => {
+        return `  private String code;`
+      }).join('\n ');
+
+      const outputFieldsBE = Object.keys(inputData).filter((key) => key != 'uid' || key != 'code').map((key) => {
+        return `  private String ${key};`
+      }).join('\n  ');
+
 
       this.fs.write(
         this.destinationPath(outputFile1),
@@ -188,6 +213,70 @@ export class ${compnameCapitalized}Component extends EntityTableComponent<${comp
 }`
 
       );
+
+      this.fs.write(
+        this.destinationPath(outputFile7),
+        `
+package it.acea.selfcare.commondto.persistence.model;
+
+import lombok.Data;
+
+import javax.persistence.*;
+import java.io.Serializable;
+import java.math.BigInteger;
+
+@Entity
+@Table(name = "${compnameLower}, schema = "public", catalog = "selfcare")
+@Data
+public class ${compnameCapitalized}Model implements Serializable {
+
+    private static final long serialVersionUID = -3113862574195731067L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "${columnId}", nullable = false)
+    ${outputFieldsUidBE}
+    ${outputFieldsCodeBE}
+    ${outputFieldsBE}
+}`
+      );
+
+      this.fs.write(
+        this.destinationPath(outputFile8),
+        `
+package it.acea.selfcare.commondto.repository;
+
+import it.acea.selfcare.commondto.persistence.model.${compnameCapitalized}Model;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigInteger;
+import java.util.List;
+
+@Transactional(readOnly = false)
+public interface ${compnameCapitalized}Repository extends JpaRepository<${compnameCapitalized}Model, ${repoId}> {
+}`
+      );
+
+      this.fs.write(
+        this.destinationPath(outputFile9),
+        `
+package it.acea.selfcare.commondto.backoffice.repository;
+
+import it.acea.selfcare.commondto.persistence.model.${compnameCapitalized}Model;
+import it.acea.selfcare.commondto.repository.${compnameCapitalized}Repository;
+import org.springframework.context.annotation.Primary;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.transaction.annotation.Transactional;
+
+@RepositoryRestResource(collectionResourceRel = "${compnameLower}", path = "${compnameLower}")
+@Transactional
+@Primary
+public interface BO_${compnameCapitalized}Repository extends ${compnameCapitalized}Repository, JpaSpecificationExecutor<${compnameCapitalized}Model> {
+}`
+      );
+
     });
   }
 
