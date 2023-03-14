@@ -77,7 +77,7 @@ module.exports = class extends Generator {
       }).join('\n ');
 
       const outputFieldsBE = Object.keys(inputData).filter((key) => key != 'uid').filter((key) => key != 'code').map((key) => {
-        return `private String ${key};`
+        return `  private String ${key};`
       }).join('\n      ');
 
 
