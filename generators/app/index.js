@@ -76,8 +76,8 @@ module.exports = class extends Generator {
         return `  private String code;`
       }).join('\n ');
 
-      const outputFieldsBE = Object.keys(inputData).filter((key) => key != 'uid' || key != 'code').map((key) => {
-        return `  private String ${key};`
+      const outputFieldsBE = Object.keys(inputData).filter((key) => {return ( key != 'uid' || key  != 'code')}).map((key) => {
+        return ` private String ${key};`
       }).join('\n  ');
 
 
@@ -236,7 +236,7 @@ public class ${compnameCapitalized}Model implements Serializable {
     @Column(name = "${columnId}", nullable = false)
     ${outputFieldsUidBE}
     ${outputFieldsCodeBE}
-    ${outputFieldsBE}
+      ${outputFieldsBE}
 }`
       );
 
