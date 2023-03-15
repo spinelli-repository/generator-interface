@@ -283,8 +283,10 @@ public interface BO_${compnameCapitalized}Repository extends ${compnameCapitaliz
   writingcomp() {
     const comment = "//CODE_YEOMAN\n";
     const commentImp = "//IMP_YEOMAN\n";
+    const commentInject = "//INJECT_YEOMAN\n";
     const regex = /\/\/CODE_YEOMAN/;
     const regexImp = /\/\/IMP_YEOMAN/;
+    const regexInject = /\/\/INJECT_YEOMAN/;
     const moduleName = 'app.module';
     const moduleFileName = moduleName.replace(/-/g, '_');
     const componentFileName = compnameCapitalized.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
@@ -292,7 +294,7 @@ public interface BO_${compnameCapitalized}Repository extends ${compnameCapitaliz
     const componentImportRouting = `import { ${compnameCapitalized}Component } from './custom-pages/${compnameLower}-page/${componentFileName}.component';`;
     const componentDeclaration = `    ${compnameCapitalized}Component,\n`;
     const componentImportDetail = `import { ${compnameCapitalized}DetailsComponent } from './custom-pages/${compnameLower}-page/${compnameLower}-details/${componentFileName}-details.component';\n`;
-    const componentDeclarationDetail= `    ${compnameCapitalized}DetailsComponent,\n`;
+    const componentDeclarationDetail = `    ${compnameCapitalized}DetailsComponent,\n`;
     const menu = comment + ` 
   {
     title: '${title}',
@@ -311,6 +313,18 @@ public interface BO_${compnameCapitalized}Repository extends ${compnameCapitaliz
     const routingImp = commentImp + `
 ${componentImportRouting}`;
 
+    const inject = commentInject + `
+private final BO_${compnameCapitalized}Repository bo${compnameCapitalized}Repository;`;
+
+    const controller = comment + `
+@GetMapping(value = "/${compnameLower}/search")
+public ResponseEntity<?> search${compnameCapitalized}(@RequestParam String filter, Pageable page, PagedResourcesAssembler assembler, PersistentEntityResourceAssembler entityAssembler) {
+    filter = URLDecoder.decode(filter, StandardCharsets.UTF_8);
+    Specification<${compnameCapitalized}Model> spec = new FilterSpecification<${compnameCapitalized}Model>(filter);
+    Pageable sortByCreatedts = PageRequest.of(page.getPageNumber(),page.getPageSize(), Sort.by("createdts").descending());
+    return ResponseEntity.ok(assembler.toModel(boBusinessPartnerRepository.findAll(Specification.where(spec), sortByCreatedts), entityAssembler));
+    }`;
+
     const moduleFile = this.fs.read(this.destinationPath(`../backoffice/src/app/${moduleFileName.toLowerCase()}.ts`));
     let newModuleFile = moduleFile.replace(/(import.*;)\n/, `$1\n${componentImport}`);
     newModuleFile = newModuleFile.replace(/(declarations:\s*\[[\s\S]*?)(\s*])/m, `$1\n${componentDeclaration}  ]`);
@@ -323,10 +337,16 @@ ${componentImportRouting}`;
 
     const menuFile = this.fs.read(this.destinationPath(`../backoffice/src/app/pages/bo-home-menu.ts`));
     let newMenuFile = menuFile.replace(regex, menu);
-    
+
+    const controllerFile = this.fs.read(this.destinationPath(`../commondto/src/main/java/it/acea/selfcare/commondto/backoffice/controller/BackofficeController.java`));
+    let newControllerFilee = controllerFile.replace(regexInject, inject);
+    newControllerFilee = newControllerFilee.replace(regex, controller);
+
     this.fs.write(this.destinationPath(`../backoffice/src/app/${moduleFileName.toLowerCase()}.ts`), newModuleFile);
     this.fs.write(this.destinationPath(`../backoffice/src/app/app-routing.module.ts`), newRoutingFile);
     this.fs.write(this.destinationPath(`../backoffice/src/app/pages/bo-home-menu.ts`), newMenuFile);
+    this.fs.write(this.destinationPath(`../commondto/src/main/java/it/acea/selfcare/commondto/backoffice/controller/BackofficeController.java`), controllerFile);
+
 
 
   }
