@@ -314,16 +314,16 @@ public interface BO_${compnameCapitalized}Repository extends ${compnameCapitaliz
 ${componentImportRouting}`;
 
     const inject = commentInject + `
-private final BO_${compnameCapitalized}Repository bo${compnameCapitalized}Repository;`;
+        private final BO_${compnameCapitalized}Repository bo${compnameCapitalized}Repository;`;
 
     const controller = comment + `
-@GetMapping(value = "/${compnameLower}/search")
-public ResponseEntity<?> search${compnameCapitalized}(@RequestParam String filter, Pageable page, PagedResourcesAssembler assembler, PersistentEntityResourceAssembler entityAssembler) {
-    filter = URLDecoder.decode(filter, StandardCharsets.UTF_8);
-    Specification<${compnameCapitalized}Model> spec = new FilterSpecification<${compnameCapitalized}Model>(filter);
-    Pageable sortByCreatedts = PageRequest.of(page.getPageNumber(),page.getPageSize(), Sort.by("createdts").descending());
-    return ResponseEntity.ok(assembler.toModel(boBusinessPartnerRepository.findAll(Specification.where(spec), sortByCreatedts), entityAssembler));
-    }`;
+        @GetMapping(value = "/${compnameLower}/search")
+        public ResponseEntity<?> search${compnameCapitalized}(@RequestParam String filter, Pageable page, PagedResourcesAssembler assembler, PersistentEntityResourceAssembler entityAssembler) {
+            filter = URLDecoder.decode(filter, StandardCharsets.UTF_8);
+            Specification<${compnameCapitalized}Model> spec = new FilterSpecification<${compnameCapitalized}Model>(filter);
+            Pageable sortByCreatedts = PageRequest.of(page.getPageNumber(),page.getPageSize(), Sort.by("createdts").descending());
+            return ResponseEntity.ok(assembler.toModel(boBusinessPartnerRepository.findAll(Specification.where(spec), sortByCreatedts), entityAssembler));
+            }`;
 
     const moduleFile = this.fs.read(this.destinationPath(`../backoffice/src/app/${moduleFileName.toLowerCase()}.ts`));
     let newModuleFile = moduleFile.replace(/(import.*;)\n/, `$1\n${componentImport}`);
