@@ -345,7 +345,7 @@ public ResponseEntity<?> search${compnameCapitalized}(@RequestParam String filte
     this.fs.write(this.destinationPath(`../backoffice/src/app/${moduleFileName.toLowerCase()}.ts`), newModuleFile);
     this.fs.write(this.destinationPath(`../backoffice/src/app/app-routing.module.ts`), newRoutingFile);
     this.fs.write(this.destinationPath(`../backoffice/src/app/pages/bo-home-menu.ts`), newMenuFile);
-    this.fs.write(this.destinationPath(`../commondto/src/main/java/it/acea/selfcare/commondto/backoffice/controller/BackofficeController.java`), controllerFile);
+    this.fs.write(this.destinationPath(`../commondto/src/main/java/it/acea/selfcare/commondto/backoffice/controller/BackofficeController.java`), newControllerFilee);
 
 
 
