@@ -78,7 +78,7 @@ module.exports = class extends Generator {
       }
 
       const outputFields3 = Object.keys(inputData).filter((key) => key != 'uid').filter((key) => key != 'code').filter((key) => key != 'createdts').filter((key) => key != 'modifiedts').map((key) => {
-        return `  { name: '${key}', type: '${typeof inputData[key]}'},`
+        return `  { name: '${key}', type: '${switchFieldFE(inputData[key])}'},`
       }).join('\n  ');
 
       repoId    = isUid ? 'BigInteger' : 'String';
@@ -241,6 +241,7 @@ import lombok.Data;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
