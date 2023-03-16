@@ -1,22 +1,22 @@
 function switchFieldFE(field) {
     switch(field) {
       case 'date':
-        return Date;
+        return 'Date';
         break;
       case 'int':
-        return number;
+        return 'number';
         break;
       case 'double':
-        return number;
+        return 'number';
         break;
       case 'string':
-        return string;
+        return 'string';
         break;
       case 'boolean':
-        return boolean;
+        return 'boolean';
         break;
       default:
-        return string;
+        return 'string';
         break;
     }
   }
@@ -24,22 +24,22 @@ function switchFieldFE(field) {
   function switchFieldBE(field) {
     switch(field) {
       case 'date':
-        return LocalDateTime;
+        return 'LocalDateTime';
         break;
       case 'int':
-        return BigInteger;
+        return 'BigInteger';
         break;
       case 'double':
-        return BigDecimal;
+        return 'BigDecimal';
         break;
       case 'string':
-        return String;
+        return 'String';
         break;
       case 'boolean':
-        return Boolean;
+        return 'Boolean';
         break;
       default:
-        return String;
+        return 'String';
         break;
     }
   }
