@@ -64,7 +64,6 @@ module.exports = class extends Generator {
 
       if(!isUid){
         outputFieldsCode = Object.keys(inputData).filter((key) => key == 'code').map((key) => {
-          isUid = true;
           return `  { name: '${key}', type: '${typeof inputData[key]}', primarykey: true},`
         }).join('\n ');
       }
