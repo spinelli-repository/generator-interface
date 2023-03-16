@@ -1,7 +1,11 @@
 const Generator = require('yeoman-generator');
 const fs = require('fs');
 const path = require('path');
-const { generateRandomAlphaNumeric } = require('../../function-yeo/random');
+const { generateRandomLong } = require('../../function-yeo/random');
+const { switchFieldFE } = require('../../function-yeo/fields');
+const { switchFieldBE } = require('../../function-yeo/fields');
+
+
 
 
 let compnameCapitalized = '';
@@ -38,7 +42,7 @@ module.exports = class extends Generator {
       title = answers.title;
       compnameLower  = segment.toLowerCase();
       compnameCapitalized = compnameLower.charAt(0).toUpperCase() + compnameLower.slice(1);
-      const randomString = generateRandomAlphaNumeric();
+      const randomString = generateRandomLong();
  
       const outputFile1 = `../backoffice/src/app/model/${compnameLower}.ts`;
       const outputFile2 = `../backoffice/src/app/custom-pages/${compnameLower}-page/${compnameLower}.conf.ts`;
@@ -53,7 +57,7 @@ module.exports = class extends Generator {
 
 
       const outputFields = Object.keys(inputData).filter((key) => key != 'createdts').filter((key) => key != 'modifiedts').map((key) => {
-        return `  ${key}: ${typeof inputData[key]};`
+        return `  ${key}: ${switchFieldFE(inputData[key])};`
       }).join('\n');
 
       const outputFields2 = Object.keys(inputData).filter((key) => key != 'createdts').filter((key) => key != 'modifiedts').map((key) => {
@@ -91,7 +95,7 @@ module.exports = class extends Generator {
       }).join('\n ');
 
       const outputFieldsBE = Object.keys(inputData).filter((key) => key != 'uid').filter((key) => key != 'code').filter((key) => key != 'createdts').filter((key) => key != 'modifiedts').map((key) => {
-        return `  private String ${key};`
+        return `  private ${switchFieldBE(inputData[key])} ${key};`
       }).join('\n    ');
 
 

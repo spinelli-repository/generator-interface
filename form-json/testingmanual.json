@@ -1,0 +1,12 @@
+{
+    "createdts" : "date",
+    "modifiedts" : "date",
+    "uid" : "int",
+    "code" : "string",
+    "value" : "string",
+    "relationendtime" : "date",
+    "italian" : "boolean",
+    "age" : "int",
+    "price" : "double",
+    "description" : "string"
+}
