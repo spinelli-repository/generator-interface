@@ -1,6 +1,8 @@
 const Generator = require('yeoman-generator');
 const fs = require('fs');
 const path = require('path');
+const { generateRandomAlphaNumeric } = require('../../function-yeo/random');
+
 
 let compnameCapitalized = '';
 let compnameLower = '';
@@ -36,7 +38,8 @@ module.exports = class extends Generator {
       title = answers.title;
       compnameLower  = segment.toLowerCase();
       compnameCapitalized = compnameLower.charAt(0).toUpperCase() + compnameLower.slice(1);
-
+      const randomString = generateRandomAlphaNumeric();
+ 
       const outputFile1 = `../backoffice/src/app/model/${compnameLower}.ts`;
       const outputFile2 = `../backoffice/src/app/custom-pages/${compnameLower}-page/${compnameLower}.conf.ts`;
       const outputFile3 = `../backoffice/src/app/custom-pages/${compnameLower}-page/${compnameLower}-details/${compnameLower}-details.component.ts`;
@@ -239,7 +242,7 @@ import java.math.BigInteger;
 @EqualsAndHashCode(callSuper=true)
 public class ${compnameCapitalized}Model extends CommonModel implements Serializable {
 
-    private static final long serialVersionUID = -3113862574195731067L;
+    private static final long serialVersionUID = -${randomString};
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "${columnId}", nullable = false)
