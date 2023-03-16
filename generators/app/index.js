@@ -69,6 +69,10 @@ module.exports = class extends Generator {
         outputFieldsCode = Object.keys(inputData).filter((key) => key == 'code').map((key) => {
           return `  { name: '${key}', type: '${typeof inputData[key]}', primarykey: true},`
         }).join('\n ');
+      }else{
+        outputFieldsCode = Object.keys(inputData).filter((key) => key == 'code').map((key) => {
+          return `  { name: '${key}', type: '${typeof inputData[key]}'},`
+        }).join('\n ');
       }
 
       const outputFields3 = Object.keys(inputData).filter((key) => key != 'uid').filter((key) => key != 'code').filter((key) => key != 'createdts').filter((key) => key != 'modifiedts').map((key) => {
