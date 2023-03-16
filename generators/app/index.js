@@ -9,6 +9,7 @@ let title = '';
 var isUid = false;
 let repoId = '';
 let columnId = '';
+let outputFieldsCode = '';
 
 module.exports = class extends Generator {
   prompting() {
@@ -48,11 +49,11 @@ module.exports = class extends Generator {
       const outputFile9 = `../commondto/src/main/java/it/acea/selfcare/commondto/backoffice/repository/BO_${compnameCapitalized}Repository.java`;
 
 
-      const outputFields = Object.keys(inputData).map((key) => {
+      const outputFields = Object.keys(inputData).filter((key) => key != 'createdts').filter((key) => key != 'modifiedts').map((key) => {
         return `  ${key}: ${typeof inputData[key]};`
       }).join('\n');
 
-      const outputFields2 = Object.keys(inputData).map((key) => {
+      const outputFields2 = Object.keys(inputData).filter((key) => key != 'createdts').filter((key) => key != 'modifiedts').map((key) => {
         return `  ${key}: { \n    title: '${key}', \n   },`
       }).join('\n ');
 
@@ -61,7 +62,14 @@ module.exports = class extends Generator {
         return `  { name: '${key}', type: '${typeof inputData[key]}', primarykey: true},`
       }).join('\n ');
 
-      const outputFields3 = Object.keys(inputData).filter((key) => key != 'uid').map((key) => {
+      if(!isUid){
+        outputFieldsCode = Object.keys(inputData).filter((key) => key == 'code').map((key) => {
+          isUid = true;
+          return `  { name: '${key}', type: '${typeof inputData[key]}', primarykey: true},`
+        }).join('\n ');
+      }
+
+      const outputFields3 = Object.keys(inputData).filter((key) => key != 'uid').filter((key) => key != 'code').filter((key) => key != 'createdts').filter((key) => key != 'modifiedts').map((key) => {
         return `  { name: '${key}', type: '${typeof inputData[key]}'},`
       }).join('\n  ');
 
@@ -76,7 +84,7 @@ module.exports = class extends Generator {
         return `  private String code;`
       }).join('\n ');
 
-      const outputFieldsBE = Object.keys(inputData).filter((key) => key != 'uid').filter((key) => key != 'code').map((key) => {
+      const outputFieldsBE = Object.keys(inputData).filter((key) => key != 'uid').filter((key) => key != 'code').filter((key) => key != 'createdts').filter((key) => key != 'modifiedts').map((key) => {
         return `  private String ${key};`
       }).join('\n    ');
 
@@ -110,6 +118,7 @@ export const config = {
     { name: 'createdts', type: 'date', component: 'datepicker' },
     { name: 'modifiedts', type: 'date', component: 'datepicker' },
   ${outputFieldsUid}
+  ${outputFieldsCode}
   ${outputFields3}
   ],
   tableSettings: merge({}, tableCommonSettings, ${compnameCapitalized}TableSettings),
@@ -226,9 +235,10 @@ import java.io.Serializable;
 import java.math.BigInteger;
 
 @Entity
-@Table(name = "${compnameLower}, schema = "public", catalog = "selfcare")
+@Table(name = "${compnameLower}", schema = "public", catalog = "selfcare")
 @Data
-public class ${compnameCapitalized}Model implements Serializable {
+@EqualsAndHashCode(callSuper=true)
+public class ${compnameCapitalized}Model extends CommonModel implements Serializable {
 
     private static final long serialVersionUID = -3113862574195731067L;
     @Id
@@ -314,7 +324,7 @@ public interface BO_${compnameCapitalized}Repository extends ${compnameCapitaliz
 ${componentImportRouting}`;
 
     const inject = commentInject + `
-        private final BO_${compnameCapitalized}Repository bo${compnameCapitalized}Repository;`;
+     private final BO_${compnameCapitalized}Repository bo${compnameCapitalized}Repository;`;
 
     const controller = comment + `
         @GetMapping(value = "/${compnameLower}/search")
@@ -322,7 +332,7 @@ ${componentImportRouting}`;
             filter = URLDecoder.decode(filter, StandardCharsets.UTF_8);
             Specification<${compnameCapitalized}Model> spec = new FilterSpecification<${compnameCapitalized}Model>(filter);
             Pageable sortByCreatedts = PageRequest.of(page.getPageNumber(),page.getPageSize(), Sort.by("createdts").descending());
-            return ResponseEntity.ok(assembler.toModel(boBusinessPartnerRepository.findAll(Specification.where(spec), sortByCreatedts), entityAssembler));
+            return ResponseEntity.ok(assembler.toModel(bo${compnameCapitalized}Repository.findAll(Specification.where(spec), sortByCreatedts), entityAssembler));
             }`;
 
     const moduleFile = this.fs.read(this.destinationPath(`../backoffice/src/app/${moduleFileName.toLowerCase()}.ts`));
