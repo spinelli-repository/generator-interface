@@ -6,8 +6,6 @@ const { switchFieldFE } = require('../../function-yeo/fields');
 const { switchFieldBE } = require('../../function-yeo/fields');
 
 
-
-
 let compnameCapitalized = '';
 let compnameLower = '';
 let title = '';
@@ -66,16 +64,16 @@ module.exports = class extends Generator {
 
       const outputFieldsUid = Object.keys(inputData).filter((key) => key == 'uid').map((key) => {
         isUid = true;
-        return `  { name: '${key}', type: '${typeof inputData[key]}', primarykey: true},`
+        return `  { name: '${key}', type: '${switchFieldFE(inputData[key])}', primarykey: true},`
       }).join('\n ');
 
       if(!isUid){
         outputFieldsCode = Object.keys(inputData).filter((key) => key == 'code').map((key) => {
-          return `  { name: '${key}', type: '${typeof inputData[key]}', primarykey: true},`
+          return `  { name: '${key}', type: '${switchFieldFE(inputData[key])}', primarykey: true},`
         }).join('\n ');
       }else{
         outputFieldsCode = Object.keys(inputData).filter((key) => key == 'code').map((key) => {
-          return `  { name: '${key}', type: '${typeof inputData[key]}'},`
+          return `  { name: '${key}', type: '${switchFieldFE(inputData[key])}'},`
         }).join('\n ');
       }
 
@@ -243,6 +241,7 @@ import lombok.Data;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "${compnameLower}", schema = "public", catalog = "selfcare")
