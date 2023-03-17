@@ -4,7 +4,7 @@ function switchField(field) {
   }
     var temp = typeof field;
     if(temp == 'number'){
-      return temp.includes('.') ? 'double' : 'integer';
+      return field.includes('.') ? 'double' : 'integer';
     }else if (temp == 'boolean'){
       return 'boolean';
     }
