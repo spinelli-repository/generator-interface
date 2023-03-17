@@ -4,7 +4,7 @@ function switchField(field) {
   }
     var temp = typeof field;
     if(temp == 'number'){
-      return field.includes('.') ? 'double' : 'integer';
+      return hasDot(field) ? 'double' : 'integer';
     }else if (temp == 'boolean'){
       return 'boolean';
     }
@@ -62,4 +62,9 @@ var determinedTypeToTypescriptTypeConf = {
     } else {
       return false;
     }
+  }
+
+  function hasDot(str) {
+    const regex = /\./g;
+    return regex.test(str);
   }
