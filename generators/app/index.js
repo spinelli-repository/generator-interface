@@ -2,6 +2,7 @@ const Generator = require('yeoman-generator');
 const fs = require('fs');
 const path = require('path');
 const { generateRandomLong } = require('../../function-yeo/random');
+const { switchField } = require('../../function-yeo/fields');
 const { determinedTypeToJavaType } = require('../../function-yeo/fields');
 const { determinedTypeToTypescriptType } = require('../../function-yeo/fields');
 const { determinedTypeToTypescriptTypeConf } = require('../../function-yeo/fields');
