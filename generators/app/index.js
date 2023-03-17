@@ -2,8 +2,9 @@ const Generator = require('yeoman-generator');
 const fs = require('fs');
 const path = require('path');
 const { generateRandomLong } = require('../../function-yeo/random');
-const { switchFieldFE } = require('../../function-yeo/fields');
-const { switchFieldBE } = require('../../function-yeo/fields');
+const { determinedTypeToJavaType } = require('../../function-yeo/fields');
+const { determinedTypeToTypescriptType } = require('../../function-yeo/fields');
+const { determinedTypeToTypescriptTypeConf } = require('../../function-yeo/fields');
 
 
 let compnameCapitalized = '';
@@ -55,7 +56,7 @@ module.exports = class extends Generator {
 
 
       const outputFields = Object.keys(inputData).filter((key) => key != 'createdts').filter((key) => key != 'modifiedts').map((key) => {
-        return `  ${key}: ${switchFieldFE(inputData[key])};`
+        return `  ${key}: ${determinedTypeToTypescriptType[switchField(inputData[key])]};`
       }).join('\n');
 
       const outputFields2 = Object.keys(inputData).filter((key) => key != 'createdts').filter((key) => key != 'modifiedts').map((key) => {
@@ -64,21 +65,27 @@ module.exports = class extends Generator {
 
       const outputFieldsUid = Object.keys(inputData).filter((key) => key == 'uid').map((key) => {
         isUid = true;
-        return `  { name: '${key}', type: '${switchFieldFE(inputData[key])}', primarykey: true},`
+        return `  { name: '${key}', type: '${determinedTypeToTypescriptTypeConf[switchField(inputData[key])]}', primarykey: true},`
       }).join('\n ');
 
       if(!isUid){
         outputFieldsCode = Object.keys(inputData).filter((key) => key == 'code').map((key) => {
-          return `  { name: '${key}', type: '${switchFieldFE(inputData[key])}', primarykey: true},`
+          return `  { name: '${key}', type: '${determinedTypeToTypescriptTypeConf[switchField(inputData[key])]}', primarykey: true},`
         }).join('\n ');
       }else{
         outputFieldsCode = Object.keys(inputData).filter((key) => key == 'code').map((key) => {
-          return `  { name: '${key}', type: '${switchFieldFE(inputData[key])}'},`
+          return `  { name: '${key}', type: '${determinedTypeToTypescriptTypeConf[switchField(inputData[key])]}'},`
         }).join('\n ');
       }
 
       const outputFields3 = Object.keys(inputData).filter((key) => key != 'uid').filter((key) => key != 'code').filter((key) => key != 'createdts').filter((key) => key != 'modifiedts').map((key) => {
-        return `  { name: '${key}', type: '${switchFieldFE(inputData[key])}'},`
+        var temp = determinedTypeToTypescriptTypeConf[switchField(inputData[key])]
+        if(temp == 'boolean'){
+          return `  { name: '${key}', type: '${determinedTypeToTypescriptTypeConf[switchField(inputData[key])]}', component: 'datepicker'},`;
+        }else if(temp == 'date'){
+          return `  { name: '${key}', type: '${determinedTypeToTypescriptTypeConf[switchField(inputData[key])]}', component: 'checkbox'},`;
+        }
+        return `  { name: '${key}', type: '${determinedTypeToTypescriptTypeConf[switchField(inputData[key])]}'},`
       }).join('\n  ');
 
       repoId    = isUid ? 'BigInteger' : 'String';
@@ -93,7 +100,7 @@ module.exports = class extends Generator {
       }).join('\n ');
 
       const outputFieldsBE = Object.keys(inputData).filter((key) => key != 'uid').filter((key) => key != 'code').filter((key) => key != 'createdts').filter((key) => key != 'modifiedts').map((key) => {
-        return `  private ${switchFieldBE(inputData[key])} ${key};`
+        return `  private ${determinedTypeToJavaType[switchField(inputData[key])]} ${key};`
       }).join('\n    ');
 
 

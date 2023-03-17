@@ -1,51 +1,49 @@
-function switchFieldFE(field) {
-    switch(field) {
-      case 'date':
-        return 'Date';
-        break;
-      case 'int':
-        return 'number';
-        break;
-      case 'double':
-        return 'number';
-        break;
-      case 'string':
-        return 'string';
-        break;
-      case 'boolean':
-        return 'boolean';
-        break;
-      default:
-        return 'string';
-        break;
+function switchField(field) {
+  try{
+    new Date(field);
+    return field.length < 10 ? 'date' : 'datetime';
+  }catch(e){
+    var temp = typeof field;
+    if(temp == 'number'){
+      return temp.includes('.') ? 'double' : 'integer';
+    }else if (temp == 'boolean'){
+      return 'boolean';
     }
+    return 'string';
   }
+}
 
-  function switchFieldBE(field) {
-    switch(field) {
-      case 'date':
-        return 'LocalDateTime';
-        break;
-      case 'int':
-        return 'BigInteger';
-        break;
-      case 'double':
-        return 'BigDecimal';
-        break;
-      case 'string':
-        return 'String';
-        break;
-      case 'boolean':
-        return 'Boolean';
-        break;
-      default:
-        return 'String';
-        break;
-    }
-  }
+var determinedTypeToJavaType = {
+	"date": "LocalDate",
+	"datetime": "LocalDateTime",
+	"string": "String",
+	"double": "BigDecimal",
+	"integer": "BigInteger",
+	"boolean": "Boolean"
+}
+
+var determinedTypeToTypescriptType = {
+	"date": "Date",
+	"datetime": "Date",
+	"double": "number",
+	"integer": "number",
+	"boolean": "boolean",
+	"string": "string"
+}
+
+var determinedTypeToTypescriptTypeConf = {
+	"date": "date",
+	"datetime": "date",
+	"double": "number",
+	"integer": "number",
+	"boolean": "boolean",
+	"string": "string"
+}
 
   module.exports = {
-    switchFieldFE: switchFieldFE,
-    switchFieldBE: switchFieldBE
+    switchField: switchField,
+    determinedTypeToJavaType: determinedTypeToJavaType,
+    determinedTypeToTypescriptType: determinedTypeToTypescriptType,
+    determinedTypeToTypescriptTypeConf: determinedTypeToTypescriptTypeConf
   };
   
