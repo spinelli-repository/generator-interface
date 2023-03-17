@@ -82,9 +82,9 @@ module.exports = class extends Generator {
       const outputFields3 = Object.keys(inputData).filter((key) => key != 'uid').filter((key) => key != 'code').filter((key) => key != 'createdts').filter((key) => key != 'modifiedts').map((key) => {
         var temp = determinedTypeToTypescriptTypeConf[switchField(inputData[key])]
         if(temp == 'boolean'){
-          return `  { name: '${key}', type: '${determinedTypeToTypescriptTypeConf[switchField(inputData[key])]}', component: 'datepicker'},`;
-        }else if(temp == 'date'){
           return `  { name: '${key}', type: '${determinedTypeToTypescriptTypeConf[switchField(inputData[key])]}', component: 'checkbox'},`;
+        }else if(temp == 'date'){
+          return `  { name: '${key}', type: '${determinedTypeToTypescriptTypeConf[switchField(inputData[key])]}', component: 'datepicker'},`;
         }
         return `  { name: '${key}', type: '${determinedTypeToTypescriptTypeConf[switchField(inputData[key])]}'},`
       }).join('\n  ');

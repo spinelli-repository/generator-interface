@@ -1,6 +1,7 @@
 function switchField(field) {
   try{
-    new Date(field);
+   var datatest = new Date(field);
+   var giornotest = datatest.getDate();
     return field.length < 10 ? 'date' : 'datetime';
   }catch(e){
     var temp = typeof field;
