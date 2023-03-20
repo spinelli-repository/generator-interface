@@ -251,6 +251,7 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import lombok.EqualsAndHashCode;
 
 
@@ -328,6 +329,7 @@ public interface BO_${compnameCapitalized}Repository extends ${compnameCapitaliz
     const menu = comment + ` 
   {
     title: '${title}',
+    link: '${compnameLower}',
     data: {
       permission: 'view',
       resource: '${compnameLower}',
