@@ -1,6 +1,6 @@
 function switchField(field) {
   if(isISO8601Date(field)){
-    return field.length < 10 ? 'date' : 'datetime';
+    return field.length <= 10 ? 'date' : 'datetime';
   }
     var temp = typeof field;
     if(temp == 'number'){

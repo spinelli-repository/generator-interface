@@ -251,6 +251,8 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import lombok.EqualsAndHashCode;
+
 
 @Entity
 @Table(name = "${compnameLower}", schema = "public", catalog = "selfcare")
