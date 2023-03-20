@@ -5,6 +5,7 @@
     "code" : "10101",
     "value" : "valore",
     "relationendtime" : "2021-10-07T05:58:30.092Z",
+    "relationendtimeshort" : "2021-10-07",
     "italian" : true,
     "age" : 18,
     "price" : 19.99,
