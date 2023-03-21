@@ -1,5 +1,5 @@
 function generateRandomLong() {
-    return Math.floor(Math.random() * Number.MAX_SAFE_INTEGER;
+    return Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
   }
 
   module.exports = {
