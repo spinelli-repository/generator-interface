@@ -64,16 +64,16 @@ module.exports = class extends Generator {
       const outputFields2 = Object.keys(inputData).filter((key) => key != 'createdts').filter((key) => key != 'modifiedts').map((key) => {
         if(key == 'uid'){
            isUid = true;
-           return `  ${key}: { \n    title: '${key}', \n  editable: false, \n },`;
+           generatedValue = '@GeneratedValue(strategy = GenerationType.IDENTITY)';
+           return `  ${key}: { \n    title: '${key}', \n    editable: false, \n   },`;
         }
         if(!isUid && key == 'code'){
-           return `  ${key}: { \n    title: '${key}', \n  editable: false, \n },`;
+           return `  ${key}: { \n    title: '${key}', \n    editable: false, \n   },`;
         }
         return `  ${key}: { \n    title: '${key}', \n   },`
       }).join('\n ');
 
       const outputFieldsUid = Object.keys(inputData).filter((key) => key == 'uid').map((key) => {
-        generatedValue = '@GeneratedValue(strategy = GenerationType.IDENTITY)';
         return `  { name: '${key}', type: '${determinedTypeToTypescriptTypeConf[switchField(inputData[key])]}', primarykey: true},`
       }).join('\n ');
 
