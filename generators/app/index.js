@@ -16,6 +16,7 @@ var isUid = false;
 let repoId = '';
 let columnId = '';
 let outputFieldsCode = '';
+let generatedValue = '';
 
 module.exports = class extends Generator {
   prompting() {
@@ -66,6 +67,7 @@ module.exports = class extends Generator {
 
       const outputFieldsUid = Object.keys(inputData).filter((key) => key == 'uid').map((key) => {
         isUid = true;
+        generatedValue = '@GeneratedValue(strategy = GenerationType.IDENTITY)';
         return `  { name: '${key}', type: '${determinedTypeToTypescriptTypeConf[switchField(inputData[key])]}', primarykey: true},`
       }).join('\n ');
 
@@ -263,7 +265,7 @@ public class ${compnameCapitalized}Model extends CommonModel implements Serializ
 
     private static final long serialVersionUID = -${randomString};
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    ${generatedValue}
     @Column(name = "${columnId}", nullable = false)
     ${outputFieldsUidBE}
     ${outputFieldsCodeBE}
