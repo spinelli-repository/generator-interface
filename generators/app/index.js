@@ -263,7 +263,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper=true)
 public class ${compnameCapitalized}Model extends CommonModel implements Serializable {
 
-    private static final long serialVersionUID = -${randomString};
+    private static final Long serialVersionUID = -${randomString};
     @Id
     ${generatedValue}
     @Column(name = "${columnId}", nullable = false)
