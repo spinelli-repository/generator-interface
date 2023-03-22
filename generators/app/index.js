@@ -65,29 +65,29 @@ module.exports = class extends Generator {
         var temp = determinedTypeToTypescriptTypeConf[switchField(inputData[key])];
         if(temp == 'boolean'){
           return `  ${key}: {
-                title: '${key}',          
-                filter: {
-                  type: 'custom',
-                  component: SelectFilterComponent,
-                  data:'boolean'
-                },
-                editor: {
-                  type: 'custom',
-                  component: CheckboxEditorComponent,
-                  data:'boolean'
-                },    
-              },`;
+  title: '${key}',          
+  filter: {
+    type: 'custom',
+    component: SelectFilterComponent,
+    data:'boolean',
+  },
+  editor: {
+    type: 'custom',
+    component: CheckboxEditorComponent,
+    data:'boolean',
+  },    
+},`;
         }
         if(temp == 'date'){
           return `  ${key}: {
-                title: '${key}', 
-                class: 'date-column',
-                valuePrepareFunction: formatDateString,
-                filter: {
-                    type: 'custom',
-                    component: DateRangePickerFilterComponent,
-                },
-              },`;
+  title: '${key}', 
+  class: 'date-column',
+  valuePrepareFunction: formatDateString,
+  filter: {
+      type: 'custom',
+      component: DateRangePickerFilterComponent,
+  },
+},`;
         }
         if(key == 'uid'){
            isUid = true;
