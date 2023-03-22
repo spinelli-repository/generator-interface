@@ -62,6 +62,33 @@ module.exports = class extends Generator {
       }).join('\n');
 
       const outputFields2 = Object.keys(inputData).filter((key) => key != 'createdts').filter((key) => key != 'modifiedts').map((key) => {
+        var temp = determinedTypeToTypescriptTypeConf[switchField(inputData[key])];
+        if(temp == 'boolean'){
+          return `  ${key}: {
+                title: '${key}',          
+                filter: {
+                  type: 'custom',
+                  component: SelectFilterComponent,
+                  data:'boolean'
+                },
+                editor: {
+                  type: 'custom',
+                  component: CheckboxEditorComponent,
+                  data:'boolean'
+                },    
+              },`;
+        }
+        if(temp == 'date'){
+          return `  ${key}: {
+                title: '${key}', 
+                class: 'date-column',
+                valuePrepareFunction: formatDateString,
+                filter: {
+                    type: 'custom',
+                    component: DateRangePickerFilterComponent,
+                },
+              },`;
+        }
         if(key == 'uid'){
            isUid = true;
            generatedValue = '@GeneratedValue(strategy = GenerationType.IDENTITY)';
@@ -128,6 +155,9 @@ import merge from 'lodash/merge';
 import { AutocompleteEditorComponent } from '../../custom-ui/autocomplete-editor.component';
 import { SelectFilterComponent } from '../../custom-ui/select-filter.component';
 import {tableCommonSettings, tableDefaultButtons} from "../entity-table/entity-table.conf";
+import {CheckboxEditorComponent} from "../../custom-ui/checkbox-editor.component";
+import {DateRangePickerFilterComponent} from "../../custom-ui/date-range-picker/date-range-picker-filter.component";
+import {formatDateString} from "../../service/env-configuration";
 
 const ${compnameCapitalized}TableSettings = {
   columns: {
@@ -227,7 +257,7 @@ export class ${compnameCapitalized}Component extends EntityTableComponent<${comp
   @Output() selectEntityFromDialog: EventEmitter<${compnameCapitalized}> = new EventEmitter();
   entityConfiguration = configSettings.config;
 
-  constructor(public backendIntegrationService: BackendIntegrationService, dialogService: NbDialogService) {
+  constructor(public backendIntegrationService: BackendIntegrationService, public dialogService: NbDialogService) {
     super(backendIntegrationService, dialogService);
   }
 
