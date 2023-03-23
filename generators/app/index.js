@@ -33,7 +33,7 @@ module.exports = class extends Generator {
       {
         type: 'input',
         name: 'segment',
-        message: 'Inserisci il collectionUrlSegment:'
+        message: 'Inserisci il nome della tabella:'
       }
     ]).then((answers) => {
       const inputFile = answers.inputFile;
