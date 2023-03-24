@@ -97,7 +97,7 @@ module.exports = class extends Generator {
         }
         if(key == 'uid'){
            isUid = true;
-           generatedValue = '@Id \n @GeneratedValue(strategy = GenerationType.IDENTITY)';
+           generatedValue = '@Id \n@GeneratedValue(strategy = GenerationType.IDENTITY)';
            return `  ${key}: { \n    title: '${key}', \n    editable: false, \n   },`;
         }
         if(!isUid && key == 'code'){
@@ -274,10 +274,10 @@ export class ${compnameCapitalized}DetailsComponent extends EntityDetailsCompone
   },`;
 
     const routing = comment + `
-    {
-      path: '${compnameLower}',
-      component: ${compnameCapitalized}Component,
-    },`;
+      {
+        path: '${compnameLower}',
+        component: ${compnameCapitalized}Component,
+      },`;
     
     const routingImp = commentImp + `
 ${componentImportRouting}`;
@@ -311,7 +311,7 @@ ${componentImportRouting}`;
 
   const outputFieldsBE = Object.keys(inputData).filter((key) => key != 'createdts').filter((key) => key != 'modifiedts').map((key) => {
     return `  private ${determinedTypeToJavaType[switchField(inputData[key])]} ${key};`
-  }).join('\n    ');
+  }).join('\n  ');
 
 
   this.fs.write(
@@ -397,8 +397,6 @@ public interface BO_${compnameCapitalized}Repository extends ${compnameCapitaliz
     newControllerFilee = newControllerFilee.replace(regex, controller);
 
     this.fs.write(this.destinationPath(`../commondto/src/main/java/it/acea/selfcare/commondto/backoffice/controller/BackofficeController.java`), newControllerFilee);
-
-
 
   }
   
