@@ -107,18 +107,18 @@ module.exports = class extends Generator {
         return `  ${key}: { \n    title: '${key}', \n   },`
       }).join('\n ');
 
-      const outputFields3 = Object.keys(inputData.map((key) => {
-        var temp = determinedTypeToTypescriptTypeConf[switchField(inputData[key])]
+      const outputFields3 = Object.keys(inputData).map((key) => {
+        var temp = determinedTypeToTypescriptTypeConf[switchField(inputData[key])];
         if(temp == 'boolean'){
           return `  { name: '${key}', type: '${determinedTypeToTypescriptTypeConf[switchField(inputData[key])]}', component: 'checkbox'},`;
         }else if(temp == 'date'){
           return `  { name: '${key}', type: '${determinedTypeToTypescriptTypeConf[switchField(inputData[key])]}', component: 'datepicker'},`;
         }else if(key == 'uid'){
-          return `  { name: '${key}', type: '${determinedTypeToTypescriptTypeConf[switchField(inputData[key])]}', primarykey: true},`
+          return `  { name: '${key}', type: '${determinedTypeToTypescriptTypeConf[switchField(inputData[key])]}', primarykey: true},`;
         }else if(!isUid && key == 'code'){
-          return `  { name: '${key}', type: '${determinedTypeToTypescriptTypeConf[switchField(inputData[key])]}', primarykey: true},`
+          return `  { name: '${key}', type: '${determinedTypeToTypescriptTypeConf[switchField(inputData[key])]}', primarykey: true},`;
         }
-        return `  { name: '${key}', type: '${determinedTypeToTypescriptTypeConf[switchField(inputData[key])]}'},`
+        return `  { name: '${key}', type: '${determinedTypeToTypescriptTypeConf[switchField(inputData[key])]}'},`;
       }).join('\n  ');
 
       repoId    = isUid ? 'BigInteger' : 'String';
