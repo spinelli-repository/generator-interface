@@ -7,7 +7,7 @@ const { determinedTypeToJavaType } = require('../../function-yeo/fields');
 const { determinedTypeToTypescriptType } = require('../../function-yeo/fields');
 const { determinedTypeToTypescriptTypeConf } = require('../../function-yeo/fields');
 
-const inputData;
+const inputData = null;
 let compnameCapitalized = '';
 let compnameLower = '';
 let title = '';
@@ -313,7 +313,7 @@ ${componentImportRouting}`;
     return `  private ${determinedTypeToJavaType[switchField(inputData[key])]} ${key};`
   }).join('\n    ');
 
-  
+
   this.fs.write(
     this.destinationPath(outputFile7),
     `
