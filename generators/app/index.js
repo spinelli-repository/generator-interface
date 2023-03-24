@@ -7,7 +7,7 @@ const { determinedTypeToJavaType } = require('../../function-yeo/fields');
 const { determinedTypeToTypescriptType } = require('../../function-yeo/fields');
 const { determinedTypeToTypescriptTypeConf } = require('../../function-yeo/fields');
 
-const inputData = null;
+var inputData = null;
 let compnameCapitalized = '';
 let compnameLower = '';
 let title = '';
