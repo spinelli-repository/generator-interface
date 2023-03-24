@@ -310,7 +310,7 @@ ${componentImportRouting}`;
   const randomString = generateRandomLong();
 
   const outputFieldsBE = Object.keys(inputData).filter((key) => key != 'createdts').filter((key) => key != 'modifiedts').map((key) => {
-    return `  private ${determinedTypeToJavaType[switchField(inputData[key])]} ${key};`
+    return `    private ${determinedTypeToJavaType[switchField(inputData[key])]} ${key};`
   }).join('\n  ');
 
 
