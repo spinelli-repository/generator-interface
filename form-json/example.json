@@ -1,0 +1,10 @@
+{
+	"uid" : 1,
+	"createdts" : "2023-07-13T14:27:48.567Z",
+	"modifiedts" : "2023-07-13T14:27:48.567Z",
+	"stringfield" : "example string",
+	"datefield" : "2023-07-13",
+	"booleanfield" : true
+}
+
+
