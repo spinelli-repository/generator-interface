@@ -87,6 +87,10 @@ module.exports = class extends Generator {
           type: 'custom',
           component: DateRangePickerFilterComponent,
       },
+      editor: {
+            type: 'custom',
+            component: DatePickerEditorComponent,
+      },
     },`;
         }
         if(key == 'uid'){
