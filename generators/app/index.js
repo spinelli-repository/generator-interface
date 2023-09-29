@@ -287,7 +287,6 @@ export class ${compnameCapitalized}Component extends EntityTableComponent<${comp
 package it.acea.selfcare.commondto.persistence.model;
 
 import lombok.Data;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigInteger;
@@ -296,20 +295,20 @@ import java.time.LocalDateTime;
 import java.time.LocalDate;
 import lombok.EqualsAndHashCode;
 
-
 @Entity
 @Table(name = "${compnameLower}", schema = "public", catalog = "selfcare")
 @Data
 @EqualsAndHashCode(callSuper=true)
 public class ${compnameCapitalized}Model extends CommonModel implements Serializable {
 
-    private static final Long serialVersionUID = ${randomString}L;
-    @Id
-    ${generatedValue}
-    @Column(name = "${columnId}", nullable = false)
-    ${outputFieldsUidBE}
-    ${outputFieldsCodeBE}
-    ${outputFieldsBE}
+      private static final Long serialVersionUID = ${randomString}L;
+      
+      @Id
+      ${generatedValue}
+      @Column(name = "${columnId}", nullable = false)
+       ${outputFieldsUidBE}
+      ${outputFieldsCodeBE}
+      ${outputFieldsBE}
 }`
       );
 
