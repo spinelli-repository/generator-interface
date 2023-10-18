@@ -7,16 +7,24 @@ const { determinedTypeToJavaType } = require('../../function-yeo/fields');
 const { determinedTypeToTypescriptType } = require('../../function-yeo/fields');
 const { determinedTypeToTypescriptTypeConf } = require('../../function-yeo/fields');
 
-
+var inputData = null;
 let compnameCapitalized = '';
 let compnameLower = '';
 let title = '';
-
-var isUid = false;
 let repoId = '';
 let columnId = '';
-let outputFieldsCode = '';
 let generatedValue = '';
+var isUid = false;
+
+//REGEX
+const comment = "//CODE_YEOMAN\n";
+const commentImp = "//IMP_YEOMAN\n";
+const commentInject = "//INJECT_YEOMAN\n";
+const regex = /\/\/CODE_YEOMAN/;
+const regexImp = /\/\/IMP_YEOMAN/;
+const regexInject = /\/\/INJECT_YEOMAN/;
+const moduleName = 'app.module';
+const moduleFileName = moduleName.replace(/-/g, '_');
 
 module.exports = class extends Generator {
   prompting() {
@@ -39,23 +47,21 @@ module.exports = class extends Generator {
       const inputFile = answers.inputFile;
       const segment = answers.segment;
       const inputFileData = fs.readFileSync(inputFile, 'utf8');
-      const inputData = JSON.parse(inputFileData);
+      inputData = JSON.parse(inputFileData);
       title = answers.title;
       compnameLower  = segment.toLowerCase();
       compnameCapitalized = compnameLower.charAt(0).toUpperCase() + compnameLower.slice(1);
-      const randomString = generateRandomLong();
- 
+    });
+  }
+
+  writingFE() {
+
       const outputFile1 = `../backoffice/src/app/model/${compnameLower}.ts`;
       const outputFile2 = `../backoffice/src/app/custom-pages/${compnameLower}-page/${compnameLower}.conf.ts`;
       const outputFile3 = `../backoffice/src/app/custom-pages/${compnameLower}-page/${compnameLower}-details/${compnameLower}-details.component.ts`;
       const outputFile4 = `../backoffice/src/app/custom-pages/${compnameLower}-page/${compnameLower}-details/${compnameLower}-details.component.html`;
       const outputFile5 = `../backoffice/src/app/custom-pages/${compnameLower}-page/${compnameLower}-details/${compnameLower}-details.component.scss`;
       const outputFile6 = `../backoffice/src/app/custom-pages/${compnameLower}-page/${compnameLower}.component.ts`;
-
-      const outputFile7 = `../commondto/src/main/java/it/acea/selfcare/commondto/persistence/model/${compnameCapitalized}Model.java`;
-      const outputFile8 = `../commondto/src/main/java/it/acea/selfcare/commondto/repository/${compnameCapitalized}Repository.java`;
-      const outputFile9 = `../commondto/src/main/java/it/acea/selfcare/commondto/backoffice/repository/BO_${compnameCapitalized}Repository.java`;
-
 
       const outputFields = Object.keys(inputData).filter((key) => key != 'createdts').filter((key) => key != 'modifiedts').map((key) => {
         return `  ${key}: ${determinedTypeToTypescriptType[switchField(inputData[key])]};`
@@ -95,53 +101,32 @@ module.exports = class extends Generator {
         }
         if(key == 'uid'){
            isUid = true;
-           generatedValue = '@GeneratedValue(strategy = GenerationType.IDENTITY)';
+           generatedValue = '@Id \n@GeneratedValue(strategy = GenerationType.IDENTITY)';
            return `  ${key}: { \n    title: '${key}', \n    editable: false, \n   },`;
         }
         if(!isUid && key == 'code'){
+          generatedValue = '@Id';
            return `  ${key}: { \n    title: '${key}', \n    editable: false, \n   },`;
         }
         return `  ${key}: { \n    title: '${key}', \n   },`
       }).join('\n ');
 
-      const outputFieldsUid = Object.keys(inputData).filter((key) => key == 'uid').map((key) => {
-        return `  { name: '${key}', type: '${determinedTypeToTypescriptTypeConf[switchField(inputData[key])]}', primarykey: true},`
-      }).join('\n ');
-
-      if(!isUid){
-        outputFieldsCode = Object.keys(inputData).filter((key) => key == 'code').map((key) => {
-          return `  { name: '${key}', type: '${determinedTypeToTypescriptTypeConf[switchField(inputData[key])]}', primarykey: true},`
-        }).join('\n ');
-      }else{
-        outputFieldsCode = Object.keys(inputData).filter((key) => key == 'code').map((key) => {
-          return `  { name: '${key}', type: '${determinedTypeToTypescriptTypeConf[switchField(inputData[key])]}'},`
-        }).join('\n ');
-      }
-
-      const outputFields3 = Object.keys(inputData).filter((key) => key != 'uid').filter((key) => key != 'code').filter((key) => key != 'createdts').filter((key) => key != 'modifiedts').map((key) => {
-        var temp = determinedTypeToTypescriptTypeConf[switchField(inputData[key])]
+      const outputFields3 = Object.keys(inputData).map((key) => {
+        var temp = determinedTypeToTypescriptTypeConf[switchField(inputData[key])];
         if(temp == 'boolean'){
           return `  { name: '${key}', type: '${determinedTypeToTypescriptTypeConf[switchField(inputData[key])]}', component: 'checkbox'},`;
         }else if(temp == 'date'){
           return `  { name: '${key}', type: '${determinedTypeToTypescriptTypeConf[switchField(inputData[key])]}', component: 'datepicker'},`;
+        }else if(key == 'uid'){
+          return `  { name: '${key}', type: '${determinedTypeToTypescriptTypeConf[switchField(inputData[key])]}', primarykey: true},`;
+        }else if(!isUid && key == 'code'){
+          return `  { name: '${key}', type: '${determinedTypeToTypescriptTypeConf[switchField(inputData[key])]}', primarykey: true},`;
         }
-        return `  { name: '${key}', type: '${determinedTypeToTypescriptTypeConf[switchField(inputData[key])]}'},`
+        return `  { name: '${key}', type: '${determinedTypeToTypescriptTypeConf[switchField(inputData[key])]}'},`;
       }).join('\n  ');
 
       repoId    = isUid ? 'BigInteger' : 'String';
       columnId  = isUid ? 'uid' : 'code';
-
-      const outputFieldsUidBE = Object.keys(inputData).filter((key) => key == 'uid').map((key) => {
-        return `  private BigInteger uid;`
-      }).join('\n ');
-
-      const outputFieldsCodeBE = Object.keys(inputData).filter((key) => key == 'code').map((key) => {
-        return `  private String code;`
-      }).join('\n ');
-
-      const outputFieldsBE = Object.keys(inputData).filter((key) => key != 'uid').filter((key) => key != 'code').filter((key) => key != 'createdts').filter((key) => key != 'modifiedts').map((key) => {
-        return `  private ${determinedTypeToJavaType[switchField(inputData[key])]} ${key};`
-      }).join('\n    ');
 
 
       this.fs.write(
@@ -173,10 +158,6 @@ export const config = {
   title: '${title}',
   collectionUrlSegment: '${compnameLower}',
   fields: [
-    { name: 'createdts', type: 'date', component: 'datepicker' },
-    { name: 'modifiedts', type: 'date', component: 'datepicker' },
-  ${outputFieldsUid}
-  ${outputFieldsCode}
   ${outputFields3}
   ],
   tableSettings: merge({}, tableCommonSettings, ${compnameCapitalized}TableSettings),
@@ -239,33 +220,32 @@ export class ${compnameCapitalized}DetailsComponent extends EntityDetailsCompone
         ``
 
       );
-      
       this.fs.write(
         this.destinationPath(outputFile6),
         `
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { NbDialogService } from '@nebular/theme';
-import { ${compnameCapitalized} } from '../../model/${compnameLower}';
-import { BackendIntegrationService } from '../../service/backend-integration.service';
-import { EntityTableComponent } from '../entity-table/entity-table/entity-table.component';
-import { ${compnameCapitalized}DetailsComponent } from './${compnameLower}-details/${compnameLower}-details.component';
-import * as configSettings from './${compnameLower}.conf';
-
-@Component({
-  selector: '${compnameLower}',
-  templateUrl: '../entity-table/entity-table/entity-table.component.html',
-  providers: [BackendIntegrationService],
-})
-export class ${compnameCapitalized}Component extends EntityTableComponent<${compnameCapitalized}> implements OnInit {
-  @Input() isDialog;
-  @Output() selectEntityFromDialog: EventEmitter<${compnameCapitalized}> = new EventEmitter();
-  entityConfiguration = configSettings.config;
-
-  constructor(public backendIntegrationService: BackendIntegrationService, public dialogService: NbDialogService) {
+    import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+    import { NbDialogService } from '@nebular/theme';
+    import { ${compnameCapitalized} } from '../../model/${compnameLower}';
+    import { BackendIntegrationService } from '../../service/backend-integration.service';
+    import { EntityTableComponent } from '../entity-table/entity-table/entity-table.component';
+    import { ${compnameCapitalized}DetailsComponent } from './${compnameLower}-details/${compnameLower}-details.component';
+    import * as configSettings from './${compnameLower}.conf';
+    
+    @Component({
+    selector: '${compnameLower}',
+    templateUrl: '../entity-table/entity-table/entity-table.component.html',
+    providers: [BackendIntegrationService],
+    })
+    export class ${compnameCapitalized}Component extends EntityTableComponent<${compnameCapitalized}> implements OnInit {
+    @Input() isDialog;
+    @Output() selectEntityFromDialog: EventEmitter<${compnameCapitalized}> = new EventEmitter();
+    entityConfiguration = configSettings.config;
+    
+    constructor(public backendIntegrationService: BackendIntegrationService, public dialogService: NbDialogService) {
     super(backendIntegrationService, dialogService);
-  }
-
-  onOpenDetail(event): void {
+    }
+    
+    onOpenDetail(event): void {
     if(this.entityConfiguration['entityDetails'] !== 'false') {
       const data: ${compnameCapitalized} = event.data;
       if (this.isDialog) {
@@ -274,93 +254,13 @@ export class ${compnameCapitalized}Component extends EntityTableComponent<${comp
         this.backendIntegrationService.onRowSelect<${compnameCapitalized}>(data, ${compnameCapitalized}DetailsComponent);
       }
     }
-  }
+    }
+    
+    
+    }`
+    
+      ); 
 
-
-}`
-
-      );
-
-      this.fs.write(
-        this.destinationPath(outputFile7),
-        `
-package it.acea.selfcare.commondto.persistence.model;
-
-import lombok.Data;
-import javax.persistence.*;
-import java.io.Serializable;
-import java.math.BigInteger;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.LocalDate;
-import lombok.EqualsAndHashCode;
-
-@Entity
-@Table(name = "${compnameLower}", schema = "public", catalog = "selfcare")
-@Data
-@EqualsAndHashCode(callSuper=true)
-public class ${compnameCapitalized}Model extends CommonModel implements Serializable {
-
-      private static final Long serialVersionUID = ${randomString}L;
-      
-      @Id
-      ${generatedValue}
-      @Column(name = "${columnId}", nullable = false)
-       ${outputFieldsUidBE}
-      ${outputFieldsCodeBE}
-      ${outputFieldsBE}
-}`
-      );
-
-      this.fs.write(
-        this.destinationPath(outputFile8),
-        `
-package it.acea.selfcare.commondto.repository;
-
-import it.acea.selfcare.commondto.persistence.model.${compnameCapitalized}Model;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigInteger;
-import java.util.List;
-
-@Transactional(readOnly = false)
-public interface ${compnameCapitalized}Repository extends JpaRepository<${compnameCapitalized}Model, ${repoId}> {
-}`
-      );
-
-      this.fs.write(
-        this.destinationPath(outputFile9),
-        `
-package it.acea.selfcare.commondto.backoffice.repository;
-
-import it.acea.selfcare.commondto.persistence.model.${compnameCapitalized}Model;
-import it.acea.selfcare.commondto.repository.${compnameCapitalized}Repository;
-import org.springframework.context.annotation.Primary;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-import org.springframework.transaction.annotation.Transactional;
-
-@RepositoryRestResource(collectionResourceRel = "${compnameLower}", path = "${compnameLower}")
-@Transactional
-@Primary
-public interface BO_${compnameCapitalized}Repository extends ${compnameCapitalized}Repository, JpaSpecificationExecutor<${compnameCapitalized}Model> {
-}`
-      );
-
-    });
-  }
-
-  writingcomp() {
-    const comment = "//CODE_YEOMAN\n";
-    const commentImp = "//IMP_YEOMAN\n";
-    const commentInject = "//INJECT_YEOMAN\n";
-    const regex = /\/\/CODE_YEOMAN/;
-    const regexImp = /\/\/IMP_YEOMAN/;
-    const regexInject = /\/\/INJECT_YEOMAN/;
-    const moduleName = 'app.module';
-    const moduleFileName = moduleName.replace(/-/g, '_');
     const componentFileName = compnameCapitalized.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
     const componentImport = `import { ${compnameCapitalized}Component } from './custom-pages/${compnameLower}-page/${componentFileName}.component';\n`;
     const componentImportRouting = `import { ${compnameCapitalized}Component } from './custom-pages/${compnameLower}-page/${componentFileName}.component';`;
@@ -378,25 +278,13 @@ public interface BO_${compnameCapitalized}Repository extends ${compnameCapitaliz
   },`;
 
     const routing = comment + `
-    {
-      path: '${compnameLower}',
-      component: ${compnameCapitalized}Component,
-    },`;
+      {
+        path: '${compnameLower}',
+        component: ${compnameCapitalized}Component,
+      },`;
     
     const routingImp = commentImp + `
 ${componentImportRouting}`;
-
-    const inject = commentInject + `
-     private final BO_${compnameCapitalized}Repository bo${compnameCapitalized}Repository;`;
-
-    const controller = comment + `
-        @GetMapping(value = "/${compnameLower}/search")
-        public ResponseEntity<?> search${compnameCapitalized}(@RequestParam String filter, Pageable page, PagedResourcesAssembler assembler, PersistentEntityResourceAssembler entityAssembler) {
-            filter = URLDecoder.decode(filter, StandardCharsets.UTF_8);
-            Specification<${compnameCapitalized}Model> spec = new FilterSpecification<${compnameCapitalized}Model>(filter);
-            Pageable sortByCreatedts = PageRequest.of(page.getPageNumber(),page.getPageSize(), Sort.by("createdts").descending());
-            return ResponseEntity.ok(assembler.toModel(bo${compnameCapitalized}Repository.findAll(Specification.where(spec), sortByCreatedts), entityAssembler));
-            }`;
 
     const moduleFile = this.fs.read(this.destinationPath(`../backoffice/src/app/${moduleFileName.toLowerCase()}.ts`));
     let newModuleFile = moduleFile.replace(/(import.*;)\n/, `$1\n${componentImport}`);
@@ -411,16 +299,108 @@ ${componentImportRouting}`;
     const menuFile = this.fs.read(this.destinationPath(`../backoffice/src/app/pages/bo-home-menu.ts`));
     let newMenuFile = menuFile.replace(regex, menu);
 
+    this.fs.write(this.destinationPath(`../backoffice/src/app/${moduleFileName.toLowerCase()}.ts`), newModuleFile);
+    this.fs.write(this.destinationPath(`../backoffice/src/app/app-routing.module.ts`), newRoutingFile);
+    this.fs.write(this.destinationPath(`../backoffice/src/app/pages/bo-home-menu.ts`), newMenuFile);
+
+  }
+
+  writingBE() {
+
+  const outputFile7 = `../commondto/src/main/java/it/acea/selfcare/commondto/persistence/model/${compnameCapitalized}Model.java`;
+  const outputFile8 = `../commondto/src/main/java/it/acea/selfcare/commondto/repository/${compnameCapitalized}Repository.java`;
+  const outputFile9 = `../commondto/src/main/java/it/acea/selfcare/commondto/backoffice/repository/BO_${compnameCapitalized}Repository.java`;
+
+  const randomString = generateRandomLong();
+
+  const outputFieldsBE = Object.keys(inputData).filter((key) => key != 'createdts').filter((key) => key != 'modifiedts').map((key) => {
+    return `    private ${determinedTypeToJavaType[switchField(inputData[key])]} ${key};`
+  }).join('\n  ');
+
+
+  this.fs.write(
+    this.destinationPath(outputFile7),
+    `
+package it.acea.selfcare.commondto.persistence.model;
+
+import lombok.Data;
+import javax.persistence.*;
+import java.io.Serializable;
+import java.math.BigInteger;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.LocalDate;
+import lombok.EqualsAndHashCode;
+
+@Entity
+@Table(name = "${compnameLower}", schema = "public", catalog = "selfcare")
+@Data
+@EqualsAndHashCode(callSuper=true)
+public class ${compnameCapitalized}Model extends CommonModel implements Serializable {
+
+
+    private static final Long serialVersionUID = ${randomString}L;
+    
+    ${generatedValue}
+    @Column(name = "${columnId}", nullable = false)
+    ${outputFieldsBE}
+}`
+  );
+
+  this.fs.write(
+    this.destinationPath(outputFile8),
+    `
+package it.acea.selfcare.commondto.repository;
+
+import it.acea.selfcare.commondto.persistence.model.${compnameCapitalized}Model;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigInteger;
+import java.util.List;
+
+@Transactional(readOnly = false)
+public interface ${compnameCapitalized}Repository extends JpaRepository<${compnameCapitalized}Model, ${repoId}> {
+}`
+  );
+
+  this.fs.write(
+    this.destinationPath(outputFile9),
+    `
+package it.acea.selfcare.commondto.backoffice.repository;
+
+import it.acea.selfcare.commondto.persistence.model.${compnameCapitalized}Model;
+import it.acea.selfcare.commondto.repository.${compnameCapitalized}Repository;
+import org.springframework.context.annotation.Primary;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.transaction.annotation.Transactional;
+
+@RepositoryRestResource(collectionResourceRel = "${compnameLower}", path = "${compnameLower}")
+@Transactional
+@Primary
+public interface BO_${compnameCapitalized}Repository extends ${compnameCapitalized}Repository, JpaSpecificationExecutor<${compnameCapitalized}Model> {
+}`
+  );
+
+  const inject = commentInject + `
+    private final BO_${compnameCapitalized}Repository bo${compnameCapitalized}Repository;`;
+
+  const controller = comment + `
+      @GetMapping(value = "/${compnameLower}/search")
+      public ResponseEntity<?> search${compnameCapitalized}(@RequestParam String filter, Pageable page, PagedResourcesAssembler assembler, PersistentEntityResourceAssembler entityAssembler) {
+          filter = URLDecoder.decode(filter, StandardCharsets.UTF_8);
+          Specification<${compnameCapitalized}Model> spec = new FilterSpecification<${compnameCapitalized}Model>(filter);
+          Pageable sortByCreatedts = PageRequest.of(page.getPageNumber(),page.getPageSize(), Sort.by("createdts").descending());
+          return ResponseEntity.ok(assembler.toModel(bo${compnameCapitalized}Repository.findAll(Specification.where(spec), sortByCreatedts), entityAssembler));
+          }`;
+
     const controllerFile = this.fs.read(this.destinationPath(`../commondto/src/main/java/it/acea/selfcare/commondto/backoffice/controller/BackofficeController.java`));
     let newControllerFilee = controllerFile.replace(regexInject, inject);
     newControllerFilee = newControllerFilee.replace(regex, controller);
 
-    this.fs.write(this.destinationPath(`../backoffice/src/app/${moduleFileName.toLowerCase()}.ts`), newModuleFile);
-    this.fs.write(this.destinationPath(`../backoffice/src/app/app-routing.module.ts`), newRoutingFile);
-    this.fs.write(this.destinationPath(`../backoffice/src/app/pages/bo-home-menu.ts`), newMenuFile);
     this.fs.write(this.destinationPath(`../commondto/src/main/java/it/acea/selfcare/commondto/backoffice/controller/BackofficeController.java`), newControllerFilee);
-
-
 
   }
   

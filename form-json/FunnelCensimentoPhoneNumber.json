@@ -1,0 +1,8 @@
+{
+	"createdts" : "2023-10-02T19:14:57.702Z",
+	"modifiedts" : "2023-10-02T19:14:57.702Z",
+	"uid" : 1,
+	"phonenumber" : "STRING",
+	"operation" : "operazione",
+	"attempts" : 111
+}
